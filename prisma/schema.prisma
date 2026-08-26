@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  // "manager" | "developer" | "client". Normalised through src/lib/roles.ts,
+  // which still accepts the legacy "admin" / "user" spellings so tokens minted
+  // before the role model existed keep working until they expire.
+  role      String   @default("developer")
+  createdAt DateTime @default(now())
+
+  developer      Developer?
+  clientProjects ProjectClient[]
+}
+
+model Developer {
+  id                  String              @id @default(cuid())
+  name                String
+  weeklyCapacityHours Float
+  meetingHoursPerWeek Float               @default(0)
+  githubUsername      String?             @unique
+  // Optional link to a login. Nullable because not every developer has an
+  // account (historic personas, contractors); unique because the reverse
+  // lookup "which developer am I?" must be unambiguous.
+  // SetNull, not Cascade: CapacityRecord and DeveloperActivity cascade off
+  // Developer, so deleting a login must never destroy capacity history.
+  userId              String?             @unique
+  user                User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  tasks               Task[]
+  capacityRecords     CapacityRecord[]
+  activity            DeveloperActivity[]
+  createdAt           DateTime            @default(now())
+}
+
+/// Which projects a client account may see. Explicit join model rather than a
+/// String[] on User so the database enforces referential integrity — a deleted
+/// project cannot leave a dangling grant behind.
+model ProjectClient {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
+}
+
+model Project {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  sprints     Sprint[]
+  clients     ProjectClient[]
+  createdAt   DateTime        @default(now())
+}
+
+model Sprint {
+  id              String           @id @default(cuid())
+  name            String
+  startDate       DateTime
+  endDate         DateTime
+  projectId       String
+  capacityBuffer      Float            @default(0.2)
+  retrospectiveNotes  String?
+  project             Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks           Task[]
+  capacityRecords CapacityRecord[]
+  createdAt       DateTime         @default(now())
+}
+
+model Task {
+  id                  String     @id @default(cuid())
+  title               String
+  description         String?
+  estimatedHours      Float
+  actualHours         Float?
+  completedAt         DateTime?
+  type                String     @default("planned")
+  status              String     @default("todo")
+  priority            String     @default("medium")
+  assignedDeveloperId String?
+  assignedDeveloper   Developer? @relation(fields: [assignedDeveloperId], references: [id], onDelete: SetNull)
+  sprintId            String
+  sprint              Sprint     @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  createdAt           DateTime   @default(now())
+}
+
+model CapacityRecord {
+  id            String    @id @default(cuid())
+  developerId   String
+  developer     Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  sprintId      String
+  sprint        Sprint    @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  assignedHours Float
+  capacityHours Float
+  overloadRisk  Boolean   @default(false)
+
+  @@unique([developerId, sprintId])
+}
+
+model DeveloperActivity {
+  id               String    @id @default(cuid())
+  developerId      String
+  developer        Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  source           String
+  activityDate     DateTime
+  commitCount      Int       @default(0)
+  pullRequestCount Int       @default(0)
+  reviewCount      Int       @default(0)
+  externalRef      String?
+  createdAt        DateTime  @default(now())
+
+  @@index([developerId, activityDate])
+  @@unique([source, externalRef])
+}

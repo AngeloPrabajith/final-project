@@ -1,0 +1,17 @@
+# Local PostgreSQL for Sprint Planner. Run: docker compose up -d
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sprint-planner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sprint_planner
+    ports:
+      - "5432:5432"
+    volumes:
+      - sprint_planner_pgdata:/var/lib/postgresql/data
+
+volumes:
+  sprint_planner_pgdata:

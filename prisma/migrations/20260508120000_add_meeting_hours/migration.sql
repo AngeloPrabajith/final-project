@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Developer" ADD COLUMN "meetingHoursPerWeek" DOUBLE PRECISION NOT NULL DEFAULT 0;
