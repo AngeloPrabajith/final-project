@@ -254,7 +254,8 @@ The seed pivots dates around the day it runs. Current sprints stay in-flight ~9 
 
 ## 9. Verification artefacts available for the report
 
-- `npm run check:authz` — **48/48 passing**; includes negative content scans and ownership/scope attack cases. Print the PASS table as an appendix.
+- `npm test` — **Vitest suite, 134 tests across 14 files, all passing.** Unit tests cover the pure planning logic (multi-project factors, capacity chain incl. the 22.4h/402% worked example, health score, burndown deltas, shrinkage + confidence + trend, all five forecast signals + squish + bands, role normalisation, redaction key-sets, task workflow, rebalancing). Integration tests run against a dedicated `sprint_planner_test` database (migrated + reseeded per run) and pin the evaluation story (low/met, moderate/met, high/partial, high/missed; 2 hits / 0 false alarms / 0 missed alarms), the no-leakage rules (retroactive forecast writes no CapacityRecord, nothing counts as done before `asOf`), CapacityRecord upsert idempotence, the meetings clamp, simulator purity, and the register role-pinning. `npm run test:report` regenerates `docs/test-report.md` (per-test pass/fail table + coverage — ~75% line coverage over `src/services` + `src/lib`), formatted for the Testing chapter.
+- `npm run check:authz` — **48/48 passing**; includes negative content scans and ownership/scope attack cases. Print the PASS table as an appendix. Complementary to the Vitest suite: authz covers the HTTP boundary, Vitest covers the logic beneath it.
 - `npx tsc --noEmit` — clean.
 - `/evaluation` — quantitative calibration of the forecast (2 hits, 0 false alarms, 0 missed alarms on 4 retroactive sprints).
 - Design docs already written (reuse for methodology chapters): `docs/predictive-layer.md` (shrinkage derivation, signal weights, squish rationale, why-not-ML), `docs/forecast-evaluation.md` (retroactive methodology, leakage prevention, calibration metric definitions, limitations).
@@ -306,4 +307,4 @@ Cohn (2005) *Agile Estimating and Planning*; Ghimire & Charters (2022) *Software
 
 ---
 
-*Repo note: as of this document the project has **no git commits** — commit before submission, and before any further changes.*
+*Repo note: version control began 2026-08-27 with a "Pre-test-suite baseline" commit followed by the test-suite commit — history from here on is per-change.*

@@ -19,7 +19,7 @@ function clamp(x: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, x));
 }
 
-function getRiskBand(probability: number): ForecastRiskBand {
+export function getRiskBand(probability: number): ForecastRiskBand {
   if (probability < 25) return "low";
   if (probability < 50) return "moderate";
   if (probability < 75) return "high";
@@ -35,7 +35,7 @@ function buildHeadline(probability: number, band: ForecastRiskBand): string {
 }
 
 // --- Signal 1: utilisation (0–40) ---
-function utilisationPoints(adjusted: AdjustedCapacityAnalysis[]): {
+export function utilisationPoints(adjusted: AdjustedCapacityAnalysis[]): {
   points: number;
   detail: string;
 } {
@@ -62,7 +62,7 @@ function utilisationPoints(adjusted: AdjustedCapacityAnalysis[]): {
 }
 
 // --- Signal 2: estimation accuracy (0–10) ---
-function estimationAccuracyPoints(
+export function estimationAccuracyPoints(
   adjusted: AdjustedCapacityAnalysis[]
 ): { points: number; detail: string } {
   if (adjusted.length === 0)
@@ -95,7 +95,7 @@ function estimationAccuracyPoints(
 }
 
 // --- Signal 3: velocity trend (0–15) ---
-async function velocityTrendPoints(
+export async function velocityTrendPoints(
   projectId: string,
   excludeSprintId: string,
   asOf: Date
@@ -137,7 +137,7 @@ async function velocityTrendPoints(
 }
 
 // --- Signal 4: adhoc history (0–20) ---
-async function adhocHistoryPoints(
+export async function adhocHistoryPoints(
   projectId: string,
   excludeSprintId: string,
   asOf: Date
@@ -178,7 +178,7 @@ async function adhocHistoryPoints(
 }
 
 // --- Signal 5: days remaining gap (0–15) ---
-function daysRemainingPoints(
+export function daysRemainingPoints(
   sprint: { startDate: Date; endDate: Date },
   tasks: { estimatedHours: number; status: string }[],
   teamWeeklyHours: number,
@@ -215,7 +215,7 @@ function daysRemainingPoints(
   return { points, detail };
 }
 
-function squashToProbability(rawPoints: number): number {
+export function squashToProbability(rawPoints: number): number {
   // 1 - exp(-raw/40); raw=0 → 0%, raw=40 → 63%, raw=80 → 86%, raw=100 → 92%
   return Math.round(100 * (1 - Math.exp(-rawPoints / 40)));
 }
