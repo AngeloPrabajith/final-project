@@ -106,10 +106,12 @@ export default function EvaluationPage() {
     outcome: e.outcome,
   }));
 
-  const overallHitRate =
-    data.totalSprints === 0
-      ? 0
-      : Math.round((data.hitCount / data.totalSprints) * 100);
+  // Alarm precision = hits / (hits + false alarms), zero-handled — per
+  // docs/forecast-evaluation.md. (Dividing by total sprints would mix in
+  // sprints that never raised an alarm and understate the metric.)
+  const alarmedCount = data.hitCount + data.falseAlarmCount;
+  const alarmPrecision =
+    alarmedCount === 0 ? 0 : Math.round((data.hitCount / alarmedCount) * 100);
 
   return (
     <>
@@ -167,7 +169,7 @@ export default function EvaluationPage() {
               <Target className="size-4 text-muted-foreground" />
               <div>
                 <CardTitle className="text-base">
-                  Forecast Calibration · {overallHitRate}% alarm precision
+                  Forecast Calibration · {alarmPrecision}% alarm precision
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Each completed sprint is rerun through the same forecast model using only

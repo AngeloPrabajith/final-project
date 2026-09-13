@@ -448,8 +448,6 @@ async function main() {
       shows: "Calibration chart (predicted failure bars vs actual completion line) and the four-sprint table with hit / false-alarm / missed-alarm counters",
       caption:
         "Figure: retroactive forecast evaluation — each completed sprint re-forecast using only data available at its start. 2 correct alarms, 0 false alarms, 0 missed alarms.",
-      note:
-        "KNOWN UI BUG (not fixed here — production code frozen for this change): the page header shows '50% alarm precision' because it divides hits by TOTAL sprints (2/4); docs/forecast-evaluation.md defines alarm precision as hits/(hits+false alarms) = 2/2 = 100%. Fix the label or the formula in src/app/(authenticated)/evaluation/page.tsx before using this figure, then re-run npm run screenshots.",
     });
 
     await m.goto("/admin/users");
