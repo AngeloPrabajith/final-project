@@ -52,7 +52,7 @@ export async function PUT(
       if (managerCount <= 1) {
         throw new HttpError(
           409,
-          "This is the only manager account — promote someone else before changing this one."
+          "This is the only manager account - promote someone else before changing this one."
         );
       }
     }

@@ -47,7 +47,7 @@ export function VelocityChart({ projectId }: { projectId: string }) {
           <div>
             <CardTitle className="text-base">Sprint Velocity</CardTitle>
             <CardDescription className="text-xs">
-              Planned vs completed hours across sprints — avg {Math.round(avgVelocity)}h completed per sprint
+              Planned vs completed hours across sprints - avg {Math.round(avgVelocity)}h completed per sprint
             </CardDescription>
           </div>
         </div>

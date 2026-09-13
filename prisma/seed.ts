@@ -127,8 +127,8 @@ const PLANNED_TITLES = [
   "Pre-order transactional emails",
   "Klaviyo auto-suppression rules",
   "SEO metadata updates",
-  "Alt-text audit — banner imagery",
-  "Keyboard navigation — quantity stepper",
+  "Alt-text audit - banner imagery",
+  "Keyboard navigation - quantity stepper",
   "Hero video pause/stop control",
   "Consolidate duplicate product schema",
   "Extend cache lifetimes for repeat visitors",
@@ -233,13 +233,13 @@ async function main() {
     data: {
       name: "NOYZ Storefront",
       description:
-        "Shopify Plus storefront — PDP experience, checkout extensibility, site-speed and accessibility programmes.",
+        "Shopify Plus storefront - PDP experience, checkout extensibility, site-speed and accessibility programmes.",
     },
   });
   const projectB = await prisma.project.create({
     data: {
       name: "Aurora Living E-Commerce",
-      description: "Luxury storefront — merchandising, transactional email, and platform integrations.",
+      description: "Luxury storefront - merchandising, transactional email, and platform integrations.",
     },
   });
   const projectC = await prisma.project.create({
@@ -364,7 +364,7 @@ async function main() {
       isHistoric: true,
       historicIndex: 2,
       retrospectiveNotes:
-        "Checkout extensibility work took 30% longer than planned. Pattern is getting consistent — Angelo's estimates are systematically low.",
+        "Checkout extensibility work took 30% longer than planned. Pattern is getting consistent - Angelo's estimates are systematically low.",
     },
     {
       name: "Sprint 0 · Performance hardening",
@@ -375,7 +375,7 @@ async function main() {
       isHistoric: true,
       historicIndex: 3,
       retrospectiveNotes:
-        "Abdulaziz joined mid-sprint and picked up the script-deferral tickets — small sample but looks on-pace.",
+        "Abdulaziz joined mid-sprint and picked up the script-deferral tickets - small sample but looks on-pace.",
     },
     {
       name: "Sprint 1 · PDP experience",

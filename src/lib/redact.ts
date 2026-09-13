@@ -142,7 +142,7 @@ export function redactProjectForClient(project: ProjectLike): ClientProject {
 
 const CONFIDENCE_LABEL: Record<ForecastRiskBand, string> = {
   low: "On track",
-  moderate: "On track — minor risk",
+  moderate: "On track - minor risk",
   high: "Delivery at risk",
   critical: "Delivery at significant risk",
 };

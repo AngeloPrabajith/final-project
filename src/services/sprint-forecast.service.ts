@@ -28,10 +28,10 @@ export function getRiskBand(probability: number): ForecastRiskBand {
 
 function buildHeadline(probability: number, band: ForecastRiskBand): string {
   if (band === "low") return `${probability}% chance of missing this sprint's commitment.`;
-  if (band === "moderate") return `${probability}% chance of slippage — monitor closely.`;
+  if (band === "moderate") return `${probability}% chance of slippage - monitor closely.`;
   if (band === "high")
-    return `${probability}% chance this sprint misses commitment — rebalance recommended.`;
-  return `${probability}% probability of sprint failure — intervention required.`;
+    return `${probability}% chance this sprint misses commitment - rebalance recommended.`;
+  return `${probability}% probability of sprint failure - intervention required.`;
 }
 
 // --- Signal 1: utilisation (0–40) ---

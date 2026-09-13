@@ -92,7 +92,7 @@ export function DeveloperCapacityHeatmap({ sprints }: Props) {
                     return (
                       <td key={sprint.id} className="text-center">
                         <div className="rounded px-2 py-1 bg-muted text-muted-foreground text-center">
-                          —
+                          -
                         </div>
                       </td>
                     );
@@ -106,7 +106,7 @@ export function DeveloperCapacityHeatmap({ sprints }: Props) {
                           {Math.round(pct)}%
                         </TooltipTrigger>
                         <TooltipContent>
-                          {devName} — {sprint.name}: {Math.round(pct)}% utilisation
+                          {devName} - {sprint.name}: {Math.round(pct)}% utilisation
                         </TooltipContent>
                       </Tooltip>
                     </td>

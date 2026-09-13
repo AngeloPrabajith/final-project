@@ -213,7 +213,7 @@ export default function DevelopersPage() {
                     <TableCell className="text-right text-muted-foreground tabular-nums">
                       {dev.meetingHoursPerWeek
                         ? `${dev.meetingHoursPerWeek}h`
-                        : "—"}
+                        : "-"}
                     </TableCell>
                     <TableCell className="text-right">
                       <AccuracyCell accuracy={accuracyByDev.get(dev.id)} />

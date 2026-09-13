@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
-  title: "Cadence — Capacity Intelligence",
+  title: "Cadence - Capacity Intelligence",
   description:
     "Cadence: capacity-aware sprint planning with predictive overload detection.",
 };

@@ -278,7 +278,7 @@ export default function AdminUsersPage() {
                   )}
                 </div>
                 <p className="text-[11px] text-muted-foreground">
-                  With nothing ticked the client sees an empty portfolio — access
+                  With nothing ticked the client sees an empty portfolio - access
                   is deny-by-default.
                 </p>
               </div>

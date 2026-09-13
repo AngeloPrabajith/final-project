@@ -7,7 +7,7 @@ export function formatDate(date: string | Date): string {
 }
 
 export function formatDateRange(start: string | Date, end: string | Date): string {
-  return `${formatDate(start)} — ${formatDate(end)}`;
+  return `${formatDate(start)} - ${formatDate(end)}`;
 }
 
 export function formatHours(hours: number): string {

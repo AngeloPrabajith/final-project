@@ -107,7 +107,7 @@ describe("whitelist redaction — client shapes are BUILT, never stripped", () =
 describe("delivery confidence — band only, never the probability", () => {
   it.each([
     ["low", "On track"],
-    ["moderate", "On track — minor risk"],
+    ["moderate", "On track - minor risk"],
     ["high", "Delivery at risk"],
     ["critical", "Delivery at significant risk"],
   ] as const)("labels the %s band as %s", (band, label) => {

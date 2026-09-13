@@ -49,7 +49,7 @@ export function ActiveSprints() {
           </Badge>
         </CardTitle>
         <CardDescription className="text-xs">
-          In-flight sprints — jump straight to the board.
+          In-flight sprints - jump straight to the board.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-2">

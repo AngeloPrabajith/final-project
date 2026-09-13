@@ -186,10 +186,10 @@ export function computeSprintHealth(analyses: CapacityAnalysis[]): SprintHealth 
   let recommendation = "Sprint workload looks good.";
   if (overloaded.length > 0) {
     const names = overloaded.map((a) => a.developerName).join(", ");
-    recommendation = `${names} ${overloaded.length === 1 ? "is" : "are"} overloaded — consider moving tasks or adjusting the capacity buffer.`;
+    recommendation = `${names} ${overloaded.length === 1 ? "is" : "are"} overloaded - consider moving tasks or adjusting the capacity buffer.`;
   } else if (atRisk.length > 0) {
     const names = atRisk.map((a) => a.developerName).join(", ");
-    recommendation = `${names} ${atRisk.length === 1 ? "is" : "are"} near capacity (≥80%) — leave buffer for ad-hoc work.`;
+    recommendation = `${names} ${atRisk.length === 1 ? "is" : "are"} near capacity (≥80%) - leave buffer for ad-hoc work.`;
   }
 
   return {

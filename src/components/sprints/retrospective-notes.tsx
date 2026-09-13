@@ -62,7 +62,7 @@ export function RetrospectiveNotes({ sprint }: Props) {
             Retrospective Notes
             {notes && !expanded && (
               <span className="text-xs text-muted-foreground font-normal">
-                — {notes.slice(0, 60)}{notes.length > 60 ? "…" : ""}
+                - {notes.slice(0, 60)}{notes.length > 60 ? "…" : ""}
               </span>
             )}
           </CardTitle>

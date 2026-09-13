@@ -267,7 +267,7 @@ export function TaskTable({
                     <TableCell>
                       {isPersonal ? (
                         <span className="text-sm">
-                          {task.sprint?.name ?? "—"}
+                          {task.sprint?.name ?? "-"}
                         </span>
                       ) : (
                         task.assignedDeveloper?.name ?? (
