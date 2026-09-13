@@ -238,7 +238,7 @@ async function main() {
   });
   const projectB = await prisma.project.create({
     data: {
-      name: "Fleur du Mal E-Commerce",
+      name: "Aurora Living E-Commerce",
       description: "Luxury storefront — merchandising, transactional email, and platform integrations.",
     },
   });
@@ -746,8 +746,8 @@ async function main() {
   console.log("  DEVELOPER saajid@sprintplanner.com         improving trend");
   console.log("  DEVELOPER newdev@sprintplanner.com       no developer profile — empty state");
   console.log("");
-  console.log("  CLIENT    client-ecom@sprintplanner.com  E-Commerce Platform only");
-  console.log("  CLIENT    client-mobile@sprintplanner.com Mobile API Backend + Mobile App");
+  console.log("  CLIENT    client-ecom@sprintplanner.com  NOYZ Storefront only");
+  console.log("  CLIENT    client-mobile@sprintplanner.com Aurora Living E-Commerce + Only Human");
   console.log("  CLIENT    client-new@sprintplanner.com   no projects — default-deny state\n");
 }
 

@@ -357,7 +357,7 @@ async function main() {
     // Retrospective notes carry seeded text only on HISTORIC sprints, so this
     // capture uses Sprint 0 rather than Sprint 1 (recorded as a discrepancy).
     await m.goto("/projects");
-    await m.getByText("Fleur du Mal E-Commerce").first().click();
+    await m.getByText("Aurora Living E-Commerce").first().click();
     await m.waitForURL("**/projects/**");
     await m.getByText(SPRINT_0).first().waitFor();
     await settle(m);
@@ -369,11 +369,11 @@ async function main() {
     await shotElement(card(m, "Retrospective Notes"), m, {
       file: "14-retro-notes.png",
       role: "manager",
-      route: "/sprints/[id] (Sprint 0, Fleur du Mal)",
+      route: "/sprints/[id] (Sprint 0, Aurora Living E-Commerce)",
       shows: "Retrospective notes with the seeded free text, auto-save indicator",
       caption:
         "Figure: sprint retrospective notes (1s-debounce autosave). Manager-authored free text that names individuals — the reason this field is stripped wholesale from client responses.",
-      note: "Discrepancy vs. brief: seeded retrospective text exists only on completed sprints, so this shows Sprint 0 · Performance hardening (a Fleur du Mal sprint), not Sprint 1.",
+      note: "Discrepancy vs. brief: seeded retrospective text exists only on completed sprints, so this shows Sprint 0 · Performance hardening (an Aurora Living E-Commerce sprint), not Sprint 1.",
     });
 
     // Capacity page with Sprint 1 selected explicitly.

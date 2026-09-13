@@ -203,7 +203,7 @@ Auth: `POST /api/auth/login`, `POST /api/auth/register` (role pinned server-side
 
 ### Provenance (say this honestly in the report)
 
-Task titles, project names, and team names are **drawn from Digiform's live Jira** (digiformservices.atlassian.net) so screenshots show authentic agency work rather than lorem-ipsum. Curation rules applied: excluded anything client-embarrassing (fraud/abuse tickets) or naming uninvolved real people; the client-user accounts remain fictional. **All quantitative data (hours, statuses, dates, factors) is engineered seed data** designed to exercise every mechanism — the personas are real names attached to *constructed* workloads, and the "criticised" persona (overloaded, under-estimating, named in retro notes) is deliberately **Angelo himself**, not a colleague. Real people used: Angelo Perera (dev, the author), Nomal Ariyarathna (dev), Kusalni Perera (dev), Abdulaziz Roshan (dev), Saajid Jiffrey (dev). Daisy Cuevas is the real client and Barbara Lee the real PM — **not** used as developer personas. Retro-note wording about colleagues is pronoun-free.
+Task titles, team names, and two of the three project names are **drawn from Digiform's live Jira** (the third project uses the fictional brand “Aurora Living” in place of a real client whose name was unsuitable for the report) (digiformservices.atlassian.net) so screenshots show authentic agency work rather than lorem-ipsum. Curation rules applied: excluded anything client-embarrassing (fraud/abuse tickets) or naming uninvolved real people; the client-user accounts remain fictional. **All quantitative data (hours, statuses, dates, factors) is engineered seed data** designed to exercise every mechanism — the personas are real names attached to *constructed* workloads, and the "criticised" persona (overloaded, under-estimating, named in retro notes) is deliberately **Angelo himself**, not a colleague. Real people used: Angelo Perera (dev, the author), Nomal Ariyarathna (dev), Kusalni Perera (dev), Abdulaziz Roshan (dev), Saajid Jiffrey (dev). Daisy Cuevas is the real client and Barbara Lee the real PM — **not** used as developer personas. Retro-note wording about colleagues is pronoun-free.
 
 ### Logins (all passwords `password123`)
 
@@ -218,13 +218,13 @@ Task titles, project names, and team names are **drawn from Digiform's live Jira
 | `saajid@sprintplanner.com` | developer | Improving trend, ×1.16 (n=12) |
 | `newdev@sprintplanner.com` | developer | **No developer profile linked** — fail-closed empty state |
 | `client-ecom@sprintplanner.com` | client | NOYZ Storefront only (the at-risk project) |
-| `client-mobile@sprintplanner.com` | client | Fleur du Mal + Only Human (many-to-many demo) |
+| `client-mobile@sprintplanner.com` | client | Aurora Living E-Commerce + Only Human (many-to-many demo) |
 | `client-new@sprintplanner.com` | client | **Zero projects** — deny-by-default empty state |
 
 ### Projects & sprints (dates pivot around seed day: current sprints run day −5 → +9)
 
 - **NOYZ Storefront** — Shopify Plus storefront. Historic **Sprint -3 · Site speed foundations** and **Sprint -1 · Checkout & promotions**, plus **Sprint 1 · PDP experience** (current, engineered overloaded).
-- **Fleur du Mal E-Commerce** — historic **Sprint -2 · ADA remediation wave 1** and **Sprint 0 · Performance hardening** (the seeded retro-notes live on these completed sprints), plus **Sprint 2 · Email & integrations** (current, healthy). Note: the four historic sprints alternate between NOYZ and Fleur du Mal — they are NOT all on NOYZ.
+- **Aurora Living E-Commerce** — historic **Sprint -2 · ADA remediation wave 1** and **Sprint 0 · Performance hardening** (the seeded retro-notes live on these completed sprints), plus **Sprint 2 · Email & integrations** (current, healthy). Note: the four historic sprints alternate between NOYZ and Aurora Living E-Commerce — they are NOT all on NOYZ.
 - **Only Human · Concurrent stretch** — **Sprint 3 · Only Human launch stretch** (current, overlaps Sprint 1; Angelo and Nomal are on both → multi-project factor engages).
 
 84 tasks (65 historic with engineered `actualHours` driving the factors; 19 current), 16 capacity records, 383 activity rows. Historic spillover counts are tuned to produce the met/met/partial/missed evaluation distribution. Sample real ticket titles visible in screenshots: *PDP FAQ module*, *Checkout upsells (Checkout Extensibility)*, *Klaviyo auto-suppression rules*, *Mini cart UX improvements*, *Urgent: PDP hero video not playing*, *Launchpad scheduled product drops*, *Alt-text audit — banner imagery*, *Extend cache lifetimes for repeat visitors*.
