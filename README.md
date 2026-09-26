@@ -301,7 +301,7 @@ The seed intentionally builds a team with distinct estimation behaviours so the 
 **Demo walkthrough (60 seconds):**
 1. Open `/developers` — scan the Estimation Factor column to see each persona.
 2. Open Sprint 1 (*PDP experience*) — forecast card shows ~70% probability, **High risk**. Angelo's card shows the `×1.29` factor badge and an adjusted utilisation ~180%.
-3. Open Sprint 2 (*Email & integrations*) — forecast in the Low band (~2%), all signals green.
+3. Open Sprint 2 (*Email & integrations*) — the healthy contrast: health 100, forecast **22% · Low**, burndown on track (50% done vs 43% expected), every developer under 80%.
 4. Move any task in Sprint 1 to Done → the "How long did it take?" dialog appears → confirm or skip. The forecast and factor refetch automatically.
 
 ---

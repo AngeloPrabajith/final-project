@@ -115,38 +115,119 @@ const PERSONAS: Persona[] = [
   },
 ];
 
-// Task title pools so the demo reads naturally.
+// Task title pools, derived from real Digiform Jira tickets (client-specific
+// names removed). Sized so every historic task can draw a DISTINCT title —
+// see `nextTitle` below. None of these collide with the hand-written
+// current-sprint titles further down.
 const PLANNED_TITLES = [
-  "PDP FAQ module",
+  // NOYZ storefront work
+  "PDP loose ends and polish",
   "Customer support live chat",
-  "Collection page one-card module",
-  "Mobile collection page hover states",
-  "Checkout upsells (Checkout Extensibility)",
-  "Launchpad scheduled product drops",
-  "Post-purchase survey integration",
-  "Pre-order transactional emails",
-  "Klaviyo auto-suppression rules",
-  "SEO metadata updates",
-  "Alt-text audit - banner imagery",
+  "Support widget input accessibility",
   "Keyboard navigation - quantity stepper",
+  "Keyboard navigation - home product list",
   "Hero video pause/stop control",
+  'Link purpose: duplicate "View product" labels',
+  "Link purpose: empty links",
+  "Choose-options dialog image alt text",
+  "Monthly site speed report",
   "Consolidate duplicate product schema",
+  "Hero and swipe video payload reduction",
+  "INP and main-thread execution",
+  "Layout stability (CLS) fixes",
+  "Accessibility compliance check",
+  "Launch QA and UAT feedback round",
+  "Landing page form and transitions",
+  "Gallery and detail experience",
+  "Product bundles setup",
+  "Mini range transactional emails",
+  "Staging site setup",
+  "Collection page mobile module image",
+  "Website font consistency",
+  "A/B test: free-shipping threshold",
+  "Product image alt-text audit",
+  "Product review iframe accessibility",
+  "Alt-text audit - banner imagery",
+  '"Find a store near you" CTA update',
+  "Clean up preconnect configuration",
   "Extend cache lifetimes for repeat visitors",
-  "Defer non-essential third-party scripts",
-  "Lazy-load third-party apps",
   "Image formats & delivery audit",
   "Homepage hero image optimisation",
-  "Mini cart UX improvements",
+  "Minify all storefront scripts",
+  "Remove legacy theme code",
+  "Lazy-load third-party apps",
+  "Defer non-essential third-party scripts",
+  "Site speed adjustments",
+  "GEO and AEO on-site optimisation",
+  "Campaign launch support",
+  "Homepage banner sound toggle",
+  "SEO, AEO and GEO audit",
+  "Artist collaboration collections page",
+  "Homepage content update",
+  "PDP chatbot response-time QA",
+  "Google API integration",
+  "Shopify product schema setup",
+  "Cookie banner guardrails",
+  "Swipe admin: in-admin video preview",
+  "Swipe admin: video length limits",
+  "Swipe admin: reorder step-one media",
+  "Swipe admin: rename uploaded files",
+  "Swipe admin: show time-limited assets",
+  "Anniversary merch reveal landing page",
+  "Bundle CTAs: show value",
+  "Strike-through pricing",
+  "Award seals on product pages",
+  // Only Human prelaunch work
+  "UI/UX concept",
+  "Three.js technical feasibility",
+  "Design review and dev feedback rounds",
+  "Design-to-dev prep (Figma specs, assets)",
+  "Prelaunch page template setup",
+  "Three.js scene and canvas integration",
+  "Fragrance notes animation",
+  "Scroll-triggered storytelling",
+  "Lead capture form",
+  "Background music player",
+  "Form data storage plan",
+  "Responsive styles and animation polish",
+  "Homepage section template setup",
+  "Split-screen merge animation",
+  "Handwriting text effect",
 ];
 
 const ADHOC_TITLES = [
   "Urgent: homepage banner bug",
   "Bug: search bar misalignment",
   "Bug: homepage module overlapping",
-  "Urgent: PDP video not playing",
   "Shopping ads showing wrong price (schema)",
   "Hotfix: hero banner not responsive on mobile",
+  "Urgent: PDP bug on collection module",
+  "Bug: student discounts page not loading",
+  "Urgent: meta pixel missing on event page",
+  "Bug: blog post numbering",
+  "Hotfix: navigation text overlap on mobile",
 ];
+
+// Each historic task draws a distinct title from a shuffled deck, so no sprint
+// (and no developer's task list) repeats a work item. The deck is shuffled by
+// its OWN PRNG, and `nextTitle` still consumes exactly one draw from `rng` at
+// the point the old `pick()` did — so every estimate, actual and priority, and
+// therefore every accuracy factor and evaluation outcome, is unchanged.
+const titleRng = makeRng(20260927);
+function shuffledDeck(titles: string[]): string[] {
+  const deck = [...titles];
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(titleRng() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+function nextTitle(deck: string[]): string {
+  rng();
+  const title = deck.pop();
+  if (!title) throw new Error("Title deck exhausted - add more titles to the pool");
+  return title;
+}
 
 async function main() {
   console.log("⟳ Purging existing data...");
@@ -433,11 +514,13 @@ async function main() {
       historicIndex: seed.historicIndex,
     });
   }
-  console.log(`✓ Sprints: ${sprints.length} (4 historic, 2 current)`);
+  console.log(`✓ Sprints: ${sprints.length} (4 historic, 3 current)`);
 
   // ---------------------------------------------------------------------------
   // Historic tasks — completed with realistic actualHours per persona.
   // ---------------------------------------------------------------------------
+  const plannedDeck = shuffledDeck(PLANNED_TITLES);
+  const adhocDeck = shuffledDeck(ADHOC_TITLES);
   let totalHistoricTasks = 0;
   for (const sprint of sprints.filter((s) => s.isHistoric)) {
     const histIdx = sprint.historicIndex!;
@@ -458,7 +541,7 @@ async function main() {
         );
         await prisma.task.create({
           data: {
-            title: pick(PLANNED_TITLES),
+            title: nextTitle(plannedDeck),
             description: null,
             estimatedHours,
             actualHours,
@@ -489,7 +572,7 @@ async function main() {
       );
       await prisma.task.create({
         data: {
-          title: pick(ADHOC_TITLES),
+          title: nextTitle(adhocDeck),
           description: null,
           estimatedHours,
           actualHours,
@@ -521,7 +604,7 @@ async function main() {
         const estimatedHours = roundToHalf(rand(6, 14));
         await prisma.task.create({
           data: {
-            title: pick(PLANNED_TITLES),
+            title: nextTitle(plannedDeck),
             description: null,
             estimatedHours,
             type: "planned",
@@ -596,22 +679,28 @@ async function main() {
     });
   }
 
-  // Sprint 2 — healthy, balanced allocation with a workflow spread.
+  // Sprint 2 — the healthy contrast to Sprint 1: every developer under 80%,
+  // low forecast band, on-track burndown. Nomal is on all three current
+  // sprints (x0.27 multi-project factor, ~12h effective here), so Nomal's
+  // work in this sprint is deliberately small. Two tasks are already done;
+  // they carry no actualHours (the actual-hours prompt's Skip path), so they
+  // add no accuracy samples and every persona factor is unchanged.
   const sprint2Tasks: Array<{
     title: string;
     description?: string;
     estimatedHours: number;
     priority: string;
-    status: CurrentTaskStatus;
+    status: CurrentTaskStatus | "done";
     type: "planned" | "adhoc";
     assignedDeveloperId: string;
+    completedAt?: Date;
   }> = [
-    { title: "Pre-order transactional emails", description: "Pre-order confirmation and shipping-delay email set.", estimatedHours: 16, priority: "medium", status: "inprogress", type: "planned", assignedDeveloperId: abdulaziz.id },
-    { title: "Post-purchase survey integration", description: "Attribution survey embedded on the order-status page.", estimatedHours: 12, priority: "medium", status: "todo", type: "planned", assignedDeveloperId: abdulaziz.id },
-    { title: "Klaviyo auto-suppression rules", description: "Automatically suppress bounced and unengaged profiles.", estimatedHours: 15, priority: "medium", status: "qa", type: "planned", assignedDeveloperId: nomal.id },
-    { title: "SEO metadata updates", description: "Title/description templates and structured-data cleanup.", estimatedHours: 12, priority: "low", status: "readyforprod", type: "planned", assignedDeveloperId: nomal.id },
-    { title: "Google Merchant Center integration", description: "Feed diagnostics and Search Console wiring.", estimatedHours: 10, priority: "low", status: "backlog", type: "planned", assignedDeveloperId: saajid.id },
-    { title: "Analytics tracking events", description: "Page-view and conversion-funnel events into GA4.", estimatedHours: 14, priority: "medium", status: "inprogress", type: "planned", assignedDeveloperId: saajid.id },
+    { title: "Pre-order transactional emails", description: "Pre-order confirmation and shipping-delay email set.", estimatedHours: 16, priority: "medium", status: "done", type: "planned", assignedDeveloperId: abdulaziz.id, completedAt: addDays(currentStart, 2) },
+    { title: "Post-purchase survey integration", description: "Attribution survey embedded on the order-status page.", estimatedHours: 12, priority: "medium", status: "inprogress", type: "planned", assignedDeveloperId: abdulaziz.id },
+    { title: "Klaviyo auto-suppression rules", description: "Automatically suppress bounced and unengaged profiles.", estimatedHours: 4, priority: "medium", status: "qa", type: "planned", assignedDeveloperId: nomal.id },
+    { title: "SEO metadata updates", description: "Title/description templates and structured-data cleanup.", estimatedHours: 4, priority: "low", status: "readyforprod", type: "planned", assignedDeveloperId: nomal.id },
+    { title: "Google Merchant Center integration", description: "Feed diagnostics and Search Console wiring.", estimatedHours: 10, priority: "low", status: "todo", type: "planned", assignedDeveloperId: saajid.id },
+    { title: "Analytics tracking events", description: "Page-view and conversion-funnel events into GA4.", estimatedHours: 14, priority: "medium", status: "done", type: "planned", assignedDeveloperId: saajid.id, completedAt: addDays(currentStart, 4) },
   ];
   for (const t of sprint2Tasks) {
     await prisma.task.create({
@@ -623,6 +712,7 @@ async function main() {
         status: t.status,
         priority: t.priority,
         assignedDeveloperId: t.assignedDeveloperId,
+        completedAt: t.completedAt ?? null,
         sprintId: sprint2.id,
       },
     });
@@ -741,7 +831,7 @@ async function main() {
   console.log("");
   console.log("  DEVELOPER angelo@sprintplanner.com        overloaded, ×1.28, 2 concurrent sprints");
   console.log("  DEVELOPER nomal@sprintplanner.com          accurate estimator, cross-sprint");
-  console.log("  DEVELOPER kusalni@sprintplanner.com        over-estimator (×0.80)");
+  console.log("  DEVELOPER kusalni@sprintplanner.com        over-estimator (×0.81)");
   console.log("  DEVELOPER abdulaziz@sprintplanner.com         new hire, low-confidence factor");
   console.log("  DEVELOPER saajid@sprintplanner.com         improving trend");
   console.log("  DEVELOPER newdev@sprintplanner.com       no developer profile — empty state");

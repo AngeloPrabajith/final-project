@@ -218,13 +218,13 @@ Task titles, team names, and two of the three project names are **drawn from Dig
 | `saajid@sprintplanner.com` | developer | Improving trend, ×1.16 (n=12) |
 | `newdev@sprintplanner.com` | developer | **No developer profile linked** — fail-closed empty state |
 | `client-ecom@sprintplanner.com` | client | NOYZ Storefront only (the at-risk project) |
-| `client-mobile@sprintplanner.com` | client | Aurora Living E-Commerce + Only Human (many-to-many demo) |
+| `client-mobile@sprintplanner.com` | client | Aurora Living E-Commerce ("On track") + Only Human ("Delivery at risk") — many-to-many demo showing both confidence states |
 | `client-new@sprintplanner.com` | client | **Zero projects** — deny-by-default empty state |
 
 ### Projects & sprints (dates pivot around seed day: current sprints run day −5 → +9)
 
 - **NOYZ Storefront** — Shopify Plus storefront. Historic **Sprint -3 · Site speed foundations** and **Sprint -1 · Checkout & promotions**, plus **Sprint 1 · PDP experience** (current, engineered overloaded).
-- **Aurora Living E-Commerce** — historic **Sprint -2 · ADA remediation wave 1** and **Sprint 0 · Performance hardening** (the seeded retro-notes live on these completed sprints), plus **Sprint 2 · Email & integrations** (current, healthy). Note: the four historic sprints alternate between NOYZ and Aurora Living E-Commerce — they are NOT all on NOYZ.
+- **Aurora Living E-Commerce** — historic **Sprint -2 · ADA remediation wave 1** and **Sprint 0 · Performance hardening** (the seeded retro-notes live on these completed sprints), plus **Sprint 2 · Email & integrations** (current, the healthy contrast: health 100, forecast 22% low, burndown on track at 50% vs 43% expected, every developer under 80%; two tasks already done with actual hours skipped, so no accuracy factor changes). Note: the four historic sprints alternate between NOYZ and Aurora Living E-Commerce — they are NOT all on NOYZ.
 - **Only Human · Concurrent stretch** — **Sprint 3 · Only Human launch stretch** (current, overlaps Sprint 1; Angelo and Nomal are on both → multi-project factor engages).
 
 84 tasks (65 historic with engineered `actualHours` driving the factors; 19 current), 16 capacity records, 383 activity rows. Historic spillover counts are tuned to produce the met/met/partial/missed evaluation distribution. Sample real ticket titles visible in screenshots: *PDP FAQ module*, *Checkout upsells (Checkout Extensibility)*, *Klaviyo auto-suppression rules*, *Mini cart UX improvements*, *Urgent: PDP hero video not playing*, *Launchpad scheduled product drops*, *Alt-text audit — banner imagery*, *Extend cache lifetimes for repeat visitors*.
@@ -238,7 +238,7 @@ The seed pivots dates around the day it runs. Current sprints stay in-flight ~9 
 ## 8. Screenshot run-sheet with expected values *(all verified live)*
 
 **Manager (`admin@`):**
-1. **Dashboard** — 3 projects, 3 active sprints, 5 developers, **3 overloaded**, 3 at-risk sprints listed.
+1. **Dashboard** — 3 projects, 3 active sprints, 5 developers, **3 overloaded**, 2 at-risk sprints listed (Sprint 1 overloaded, Sprint 3 at-risk; Sprint 2 is healthy so it is correctly absent).
 2. **Sprint 1 · PDP experience** — health score **0 (overloaded)**; burndown **at-risk** (expected ~43%, actual 0% at day ~6 of 14); **ForecastCard: 73% · High** — headline "73% chance this sprint misses commitment - rebalance recommended", contributor bars 40/3/3/4/3; Angelo's capacity card: 90h active / 22.4h effective (402%), ×1.28 badge, "12h/wk meetings", "Shared with 1 other sprint · ×0.50 multi-project". NOTE: the rebalancing panel does NOT render on this sprint — every potential recipient is overloaded or lacks headroom for any candidate task, so the algorithm correctly produces no suggestions; see Sprint 3 · Only Human launch stretch for a live suggestion (Nomal → Angelo, 8h low-priority task).
 3. Same sprint, **Kanban** — 8 columns, real ticket titles, priority-coloured cards.
 4. **Capacity** — heatmap all devs × 7 sprints; ad-hoc simulator.
