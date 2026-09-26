@@ -31,7 +31,7 @@ export function DeveloperWorkloadTable({
         <TableHeader>
           <TableRow>
             <TableHead>Developer</TableHead>
-            <TableHead className="text-right">Capacity</TableHead>
+            <TableHead className="text-right">Effective capacity</TableHead>
             <TableHead className="text-right">Assigned</TableHead>
             <TableHead className="text-right">Utilization</TableHead>
             <TableHead>Status</TableHead>
@@ -51,7 +51,7 @@ export function DeveloperWorkloadTable({
                 {row.developerName}
               </TableCell>
               <TableCell className="text-right">
-                {formatHours(row.capacityHours)}
+                {formatHours(row.effectiveCapacityHours)}
               </TableCell>
               <TableCell className="text-right">
                 {formatHours(row.assignedHours)}

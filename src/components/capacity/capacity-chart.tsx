@@ -20,7 +20,7 @@ export function CapacityChart({ data }: { data: CapacityAnalysis[] }) {
 
   const chartData = data.map((d) => ({
     name: d.developerName.split(" ")[0],
-    capacity: d.capacityHours,
+    capacity: d.effectiveCapacityHours,
     assigned: d.assignedHours,
     overloaded: d.overloadRisk,
   }));
@@ -50,15 +50,12 @@ export function CapacityChart({ data }: { data: CapacityAnalysis[] }) {
                 border: "1px solid var(--color-border)",
                 borderRadius: "8px",
               }}
-              formatter={(value, name) => [
-                `${value}h`,
-                name === "capacity" ? "Capacity" : "Assigned",
-              ]}
+              formatter={(value, name) => [`${value}h`, name]}
             />
             <Legend />
             <Bar
               dataKey="capacity"
-              name="Capacity"
+              name="Effective capacity"
               fill="#22c55e"
               radius={[4, 4, 0, 0]}
             />

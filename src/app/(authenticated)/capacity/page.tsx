@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
+const OVERLOAD_FILTER_LABELS: Record<string, string> = {
+  all: "All Developers",
+  overloaded: "Overloaded Only",
+  healthy: "Healthy Only",
+};
+
 export default function CapacityPage() {
   const { data: sprints, isLoading: sprintsLoading } = useSprints();
   const { data: developers } = useDevelopers();
@@ -48,8 +54,19 @@ export default function CapacityPage() {
               <Skeleton className="h-9 w-[240px]" />
             ) : (
               <Select
-                value={activeSprint}
+                value={activeSprint || null}
                 onValueChange={(v) => setSelectedSprintId(v ?? "")}
+                // Base UI 1.2 suppresses `placeholder` whenever a record `items`
+                // map lacks a `null` key, so the empty state is labelled here.
+                items={{
+                  null: "Select a sprint",
+                  ...Object.fromEntries(
+                  (sprints ?? []).map((s) => [
+                    s.id,
+                    `${s.name}${s.project ? ` (${s.project.name})` : ""}`,
+                  ])
+                  ),
+                }}
               >
                 <SelectTrigger className="w-[280px]">
                   <SelectValue placeholder="Select a sprint" />
@@ -71,6 +88,7 @@ export default function CapacityPage() {
             <Select
               value={overloadFilter}
               onValueChange={(v) => setOverloadFilter(v ?? "all")}
+              items={OVERLOAD_FILTER_LABELS}
             >
               <SelectTrigger className="w-[160px]">
                 <SelectValue />

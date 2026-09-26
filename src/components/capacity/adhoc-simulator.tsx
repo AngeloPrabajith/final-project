@@ -62,7 +62,13 @@ export function AdhocSimulator({
           <div className="grid gap-2">
             <Label>Developer</Label>
             <Select
-              value={developerId}
+              value={developerId || null}
+              // Base UI 1.2 suppresses `placeholder` whenever a record `items`
+              // map lacks a `null` key, so the empty state is labelled here.
+              items={{
+                null: "Select developer",
+                ...Object.fromEntries(developers.map((d) => [d.id, d.name])),
+              }}
               onValueChange={(v) => {
                 setDeveloperId(v ?? "");
                 setShouldSimulate(false);
@@ -124,7 +130,7 @@ export function AdhocSimulator({
                   {formatHours(result.before.assignedHours)}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  of {formatHours(result.before.capacityHours)} (
+                  of {formatHours(result.before.effectiveCapacityHours)} effective (
                   {formatPercent(result.before.utilizationPercent)})
                 </div>
               </div>
@@ -139,7 +145,7 @@ export function AdhocSimulator({
                   {formatHours(result.after.assignedHours)}
                 </div>
                 <div className="text-xs">
-                  of {formatHours(result.after.capacityHours)} (
+                  of {formatHours(result.after.effectiveCapacityHours)} effective (
                   {formatPercent(result.after.utilizationPercent)})
                 </div>
               </div>

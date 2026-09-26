@@ -133,7 +133,11 @@ export function TaskForm({ sprintId, task, open: controlledOpen, onOpenChange }:
             </div>
             <div className="grid gap-2">
               <Label>Type</Label>
-              <Select value={type} onValueChange={(v) => v && setType(v as TaskType)}>
+              <Select
+                value={type}
+                onValueChange={(v) => v && setType(v as TaskType)}
+                items={{ planned: "Planned", adhoc: "Ad-hoc" }}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -146,7 +150,11 @@ export function TaskForm({ sprintId, task, open: controlledOpen, onOpenChange }:
           </div>
           <div className="grid gap-2">
             <Label>Priority</Label>
-            <Select value={priority} onValueChange={(v) => v && setPriority(v as TaskPriority)}>
+            <Select
+              value={priority}
+              onValueChange={(v) => v && setPriority(v as TaskPriority)}
+              items={{ low: "Low", medium: "Medium", high: "High", critical: "Critical" }}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

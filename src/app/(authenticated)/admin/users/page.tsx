@@ -214,7 +214,11 @@ export default function AdminUsersPage() {
           <div className="grid gap-4">
             <div className="grid gap-1.5">
               <Label>Role</Label>
-              <Select value={role} onValueChange={(v) => v && setRole(v as Role)}>
+              <Select
+                value={role}
+                onValueChange={(v) => v && setRole(v as Role)}
+                items={ROLE_LABEL}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -234,6 +238,10 @@ export default function AdminUsersPage() {
                 <Select
                   value={developerId}
                   onValueChange={(v) => v && setDeveloperId(v)}
+                  items={{
+                    [UNLINKED]: "Not linked",
+                    ...Object.fromEntries((developers ?? []).map((d) => [d.id, d.name])),
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />

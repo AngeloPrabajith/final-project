@@ -37,7 +37,7 @@ export function CapacitySummary({
 
   const chartData = data.map((d) => ({
     name: d.developerName.split(" ")[0],
-    capacity: d.capacityHours,
+    capacity: d.effectiveCapacityHours,
     assigned: d.assignedHours,
     fill: d.overloadRisk ? "#ef4444" : "#3b82f6",
   }));
@@ -59,16 +59,13 @@ export function CapacitySummary({
                 border: "1px solid var(--color-border)",
                 borderRadius: "8px",
               }}
-              formatter={(value, name) => [
-                `${value}h`,
-                name === "capacity" ? "Capacity" : "Assigned",
-              ]}
+              formatter={(value, name) => [`${value}h`, name]}
             />
             <Legend />
             <ReferenceLine y={0} stroke="var(--color-border)" />
             <Bar
               dataKey="capacity"
-              name="Capacity"
+              name="Effective capacity"
               fill="#22c55e"
               radius={[4, 4, 0, 0]}
             />

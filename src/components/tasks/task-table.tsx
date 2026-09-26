@@ -27,6 +27,14 @@ import { toast } from "sonner";
 import type { Task, TaskStatus } from "@/types";
 import { TASK_STATUSES, isTerminalStatus } from "@/lib/task-statuses";
 
+const STATUS_LABELS: Record<string, string> = Object.fromEntries(
+  TASK_STATUSES.map((s) => [s.id, s.label])
+);
+const STATUS_FILTER_LABELS: Record<string, string> = {
+  all: "All Status",
+  ...STATUS_LABELS,
+};
+
 function priorityConfig(priority: string) {
   switch (priority) {
     case "critical":
@@ -193,7 +201,11 @@ export function TaskTable({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v ?? "all")}>
+        <Select
+          value={filterStatus}
+          onValueChange={(v) => setFilterStatus(v ?? "all")}
+          items={STATUS_FILTER_LABELS}
+        >
           <SelectTrigger className="h-8 w-[160px] text-sm">
             <SelectValue />
           </SelectTrigger>
@@ -289,6 +301,7 @@ export function TaskTable({
                     <TableCell>
                       <Select
                         value={task.status}
+                        items={STATUS_LABELS}
                         onValueChange={(v) =>
                           v && handleStatusChange(task, v as TaskStatus)
                         }
