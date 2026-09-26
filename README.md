@@ -277,7 +277,7 @@ All passwords are `password123`.
 |---|---|---|
 | `admin@sprintplanner.com` | Manager | Full access — the original application |
 | `lead@sprintplanner.com` | Manager | Second manager account |
-| `angelo@sprintplanner.com` | Developer | **The interesting one.** Overloaded (402%), ×1.28 under-estimator, 12h/wk meetings, two concurrent sprints |
+| `angelo@sprintplanner.com` | Developer | **The interesting one.** Overloaded (161% — yet only 45% of nominal hours), ×1.28 under-estimator, 12h/wk meetings, two concurrent sprints |
 | `kusalni@sprintplanner.com` | Developer | Over-estimator (×0.80) — the opposite sign |
 | `abdulaziz@sprintplanner.com` | Developer | New hire — low-confidence factor, shrinkage visible |
 | `nomal@` / `saajid@sprintplanner.com` | Developer | Accurate estimator / improving trend |
@@ -300,7 +300,7 @@ The seed intentionally builds a team with distinct estimation behaviours so the 
 
 **Demo walkthrough (60 seconds):**
 1. Open `/developers` — scan the Estimation Factor column to see each persona.
-2. Open Sprint 1 (*PDP experience*) — forecast card shows ~70% probability, **High risk**. Angelo's card shows the `×1.29` factor badge and an adjusted utilisation ~180%.
+2. Open Sprint 1 (*PDP experience*) — forecast card shows **70% · High risk**. Angelo's card shows 36h against 22.4h effective (161%), the `×1.28` factor badge, and an adjusted utilisation of 206%. A rebalancing suggestion proposes moving a 6h task to Kusalni.
 3. Open Sprint 2 (*Email & integrations*) — the healthy contrast: health 100, forecast **22% · Low**, burndown on track (50% done vs 43% expected), every developer under 80%.
 4. Move any task in Sprint 1 to Done → the "How long did it take?" dialog appears → confirm or skip. The forecast and factor refetch automatically.
 

@@ -42,9 +42,18 @@ describe("capacity chain — handbook worked example (Angelo in Sprint 1)", () =
     expect(effective).toBe(22.4);
   });
 
-  it("flags 90 assigned hours against 22.4h effective as 402% utilisation and overloaded", () => {
-    expect(getOverloadPercentage(90, 22.4)).toBe(402);
-    expect(detectOverload(90, 22.4)).toBe(true);
+  it("flags 36 assigned hours against 22.4h effective as 161% utilisation and overloaded", () => {
+    expect(getOverloadPercentage(36, 22.4)).toBe(161);
+    expect(detectOverload(36, 22.4)).toBe(true);
+  });
+
+  // Handbook §3: the thesis case — a naive hours-vs-nominal view (36h of an
+  // 80h fortnight) reads as under half-loaded; only the modelled chain
+  // reveals the overload.
+  it("reads the same 36 hours as under half-loaded against nominal capacity", () => {
+    const nominalFortnight = weekly * sprintWeeks; // 80h, what a task tracker assumes
+    expect(getOverloadPercentage(36, nominalFortnight)).toBe(45);
+    expect(detectOverload(36, nominalFortnight)).toBe(false);
   });
 });
 

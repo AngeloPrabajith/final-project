@@ -81,7 +81,9 @@ overload         = assignedHours > effective
 
 ### Worked example — Angelo in Sprint 1 *(verified live; use this in the report)*
 
-40h/wk − 12h meetings = 28h × 2 weeks = 56h × 0.8 (buffer) = 44.8h × **0.5** (allocation, 1 other concurrent sprint; context-switch = 1.0 at N=1) = **22.4h effective**. Assigned 90h → **402% utilisation, overloaded**. The same 22.4h effective applies in his other sprint (Sprint 3) where 14h assigned → 63%.
+40h/wk − 12h meetings = 28h × 2 weeks = 56h × 0.8 (buffer) = 44.8h × **0.5** (allocation, 1 other concurrent sprint; context-switch = 1.0 at N=1) = **22.4h effective**. Assigned 36h → **161% utilisation, overloaded**. The same 22.4h effective applies in his other sprint (Sprint 3) where 14h assigned → 63%; across both sprints he carries 50h against 44.8h effective (~112%), so the overload is real and not an artefact of the equal split.
+
+**Why this example matters (use it in the report):** a task tracker comparing assigned hours with nominal hours sees 36h of an 80h fortnight — *45%, under half-loaded*. Only the modelled chain reveals 161%. That gap — invisible overload that conventional tools report as spare capacity — is the thesis in one number. (Tuning note: the seed originally assigned 90h, which compounded to 402% once meetings and the multi-project split were layered on; it was deliberately retuned to a credible level so the demo doesn't read as contrived.)
 
 ### Derived analytics
 
@@ -115,12 +117,12 @@ Factor >1 = under-estimator (work takes longer than estimated); <1 = over-estima
 | Team utilisation (accuracy-adjusted peak) | 40 | **40/40** — "Angelo Perera, Nomal Ariyarathna, Saajid Jiffrey over adjusted capacity" |
 | Ad-hoc history (fraction of last 2 sprints' hours) | 20 | 3/20 — 7% ad-hoc |
 | Velocity trend (last 3 sprints' completion rate) | 15 | 3/15 — 94% |
-| Days remaining gap (remaining hours vs time left at team pace) | 15 | 4/15 — "206h remaining needs ~11 days; 9 left" |
-| Estimation accuracy (team-weighted deviation, asymmetric — under-estimators penalised more) | 10 | 3/10 — under-estimates by 12% |
+| Days remaining gap (remaining hours vs time left at team pace) | 15 | 0/15 — "On pace: 113h left with 9 days remaining" |
+| Estimation accuracy (team-weighted deviation, asymmetric — under-estimators penalised more) | 10 | 2/10 — under-estimates by 7% |
 
-Raw points (53 here) squashed via `probability = 100 × (1 − e^(−raw/40))` → **73%**. Bands: <25 low, <50 moderate, <75 high, else critical. The exponential squish was chosen over a logistic because raw = 0 must map to 0% (a pristine sprint should not read "50% likely to fail").
+Raw points (48 here) squashed via `probability = 100 × (1 − e^(−raw/40))` → **70%**. Bands: <25 low, <50 moderate, <75 high, else critical. The exponential squish was chosen over a logistic because raw = 0 must map to 0% (a pristine sprint should not read "50% likely to fail").
 
-The utilisation signal uses **adjusted** capacity: `effective ÷ accuracyFactor` per developer — so a chronic under-estimator's 90h of assigned work is judged against less usable capacity. Every forecast ships its contributor breakdown (points + plain-English detail line) — **explainable, not black-box**; this is a deliberate viva defence (§10).
+The utilisation signal uses **adjusted** capacity: `effective ÷ accuracyFactor` per developer — so a chronic under-estimator's 36h of assigned work is judged against less usable capacity (Angelo: 22.4h ÷ 1.28 = 17.5h adjusted → 206%). Every forecast ships its contributor breakdown (points + plain-English detail line) — **explainable, not black-box**; this is a deliberate viva defence (§10).
 
 ### Forecast evaluation (`/evaluation` page) — the strongest report artefact
 
@@ -239,22 +241,22 @@ The seed pivots dates around the day it runs. Current sprints stay in-flight ~9 
 
 **Manager (`admin@`):**
 1. **Dashboard** — 3 projects, 3 active sprints, 5 developers, **3 overloaded**, 2 at-risk sprints listed (Sprint 1 overloaded, Sprint 3 at-risk; Sprint 2 is healthy so it is correctly absent).
-2. **Sprint 1 · PDP experience** — health score **0 (overloaded)**; burndown **at-risk** (expected ~43%, actual 0% at day ~6 of 14); **ForecastCard: 73% · High** — headline "73% chance this sprint misses commitment - rebalance recommended", contributor bars 40/3/3/4/3; Angelo's capacity card: 90h active / 22.4h effective (402%), ×1.28 badge, "12h/wk meetings", "Shared with 1 other sprint · ×0.50 multi-project". NOTE: the rebalancing panel does NOT render on this sprint — every potential recipient is overloaded or lacks headroom for any candidate task, so the algorithm correctly produces no suggestions; see Sprint 3 · Only Human launch stretch for a live suggestion (Nomal → Angelo, 8h low-priority task).
+2. **Sprint 1 · PDP experience** — health score **0 (overloaded)**; burndown **at-risk** (expected ~43%, actual 0% at day ~6 of 14); **ForecastCard: 70% · High** — headline "70% chance this sprint misses commitment - rebalance recommended", contributor bars 40/3/3/0/2; Angelo's capacity card: 36h active / 22.4h effective (161%), adj. 17.5h (206%), ×1.28 badge, "12h/wk meetings", "Shared with 1 other sprint · ×0.50 multi-project"; Nomal 16h / 12.4h (129%), "Shared with 2 other sprints · ×0.27" (the context-switch penalty engaged). **Rebalancing panel:** one suggestion — move *Mini cart UX improvements* (6h, medium) Angelo → Kusalni, projecting Angelo 134% / Kusalni 99%. (Sprint 3 shows a second live suggestion: *Card generation content pipeline* 8h, Nomal → Angelo.)
 3. Same sprint, **Kanban** — 8 columns, real ticket titles, priority-coloured cards.
 4. **Capacity** — heatmap all devs × 7 sprints; ad-hoc simulator.
 5. **Developers** — factor column: Angelo ×1.28 ("under-estimates by 28%", n=15), Kusalni ×0.81, Abdulaziz n=1 low-confidence, Saajid ×1.16 improving.
 6. **Evaluation** — the §4 table + chart; "100% alarm precision" header.
 7. **Team & Access** — 11 accounts, role/link/project controls, "Unlinked Newcomer" in amber.
 
-**Developer (`angelo@`):** **My Work** — 8 open tasks / 132h; Sprint 1 at 402% (over), Sprint 3 at 63%; the multiplier-chain card reconciling 40 → 28 → 56 → 44.8 → **22.4h**; own ×1.28 accuracy card; task list with Sprint column instead of Assignee, no edit/delete. Optionally `newdev@` for the unlinked empty state.
+**Developer (`angelo@`):** **My Work** — 8 open tasks / 78h; Sprint 1 at 161% (over), Sprint 3 at 63%; the multiplier-chain card reconciling 40 → 28 → 56 → 44.8 → **22.4h**; own ×1.28 accuracy card; task list with Sprint column instead of Assignee, no edit/delete. Optionally `newdev@` for the unlinked empty state.
 
-**Client (`client-ecom@`):** **Delivery** — one card: "NOYZ Storefront · 54% complete · **Delivery at risk**" (band only, no percentage-of-failure, no names); drill-in shows burndown + velocity + sprint list. Optionally `client-new@` — empty portfolio (deny by default).
+**Client (`client-ecom@`):** **Delivery** — one card: "NOYZ Storefront · 67% complete · **Delivery at risk**" (band only, no percentage-of-failure, no names); drill-in shows burndown + velocity + sprint list. Optionally `client-new@` — empty portfolio (deny by default).
 
 ---
 
 ## 9. Verification artefacts available for the report
 
-- `npm test` — **Vitest suite, 134 tests across 14 files, all passing.** Unit tests cover the pure planning logic (multi-project factors, capacity chain incl. the 22.4h/402% worked example, health score, burndown deltas, shrinkage + confidence + trend, all five forecast signals + squish + bands, role normalisation, redaction key-sets, task workflow, rebalancing). Integration tests run against a dedicated `sprint_planner_test` database (migrated + reseeded per run) and pin the evaluation story (low/met, moderate/met, high/partial, high/missed; 2 hits / 0 false alarms / 0 missed alarms), the no-leakage rules (retroactive forecast writes no CapacityRecord, nothing counts as done before `asOf`), CapacityRecord upsert idempotence, the meetings clamp, simulator purity, and the register role-pinning. `npm run test:report` regenerates `docs/test-report.md` (per-test pass/fail table + coverage — ~75% line coverage over `src/services` + `src/lib`), formatted for the Testing chapter.
+- `npm test` — **Vitest suite, 135 tests across 14 files, all passing.** Unit tests cover the pure planning logic (multi-project factors, capacity chain incl. the 22.4h/161% worked example and its 45%-nominal contrast, health score, burndown deltas, shrinkage + confidence + trend, all five forecast signals + squish + bands, role normalisation, redaction key-sets, task workflow, rebalancing). Integration tests run against a dedicated `sprint_planner_test` database (migrated + reseeded per run) and pin the evaluation story (low/met, moderate/met, high/partial, high/missed; 2 hits / 0 false alarms / 0 missed alarms), the no-leakage rules (retroactive forecast writes no CapacityRecord, nothing counts as done before `asOf`), CapacityRecord upsert idempotence, the meetings clamp, simulator purity, and the register role-pinning. `npm run test:report` regenerates `docs/test-report.md` (per-test pass/fail table + coverage — ~75% line coverage over `src/services` + `src/lib`), formatted for the Testing chapter.
 - `npm run check:authz` — **48/48 passing**; includes negative content scans and ownership/scope attack cases. Print the PASS table as an appendix. Complementary to the Vitest suite: authz covers the HTTP boundary, Vitest covers the logic beneath it.
 - `npx tsc --noEmit` — clean.
 - `/evaluation` — quantitative calibration of the forecast (2 hits, 0 false alarms, 0 missed alarms on 4 retroactive sprints).

@@ -16,7 +16,7 @@ async function sprintByName(name: string) {
 }
 
 describe("capacity engine against the seeded database", () => {
-  it("reproduces the handbook worked example end to end: Angelo at 22.4h effective and 402% in Sprint 1", async () => {
+  it("reproduces the handbook worked example end to end: Angelo at 22.4h effective and 161% in Sprint 1", async () => {
     const sprint = await sprintByName("Sprint 1 · PDP experience");
     const analyses = await computeSprintCapacity(sprint.id);
     const angelo = analyses.find((a) => a.developerName === "Angelo Perera");
@@ -24,8 +24,8 @@ describe("capacity engine against the seeded database", () => {
     expect(angelo).toBeDefined();
     expect(angelo!.capacityHours).toBe(56); // (40 − 12) × 2 weeks
     expect(angelo!.effectiveCapacityHours).toBe(22.4); // × 0.8 buffer × 0.5 multi-project
-    expect(angelo!.assignedHours).toBe(90);
-    expect(angelo!.utilizationPercent).toBe(402);
+    expect(angelo!.assignedHours).toBe(36);
+    expect(angelo!.utilizationPercent).toBe(161);
     expect(angelo!.overloadRisk).toBe(true);
     expect(angelo!.meetingHoursPerWeek).toBe(12);
     expect(angelo!.multiProjectFactor).toBe(0.5);

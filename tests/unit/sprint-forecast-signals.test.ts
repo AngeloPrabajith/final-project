@@ -50,8 +50,8 @@ describe("exponential squish — probability = 100 × (1 − e^(−raw/40))", ()
     expect(squashToProbability(0)).toBe(0);
   });
 
-  it("maps 53 raw points to 73% (the live Sprint 1 figure)", () => {
-    expect(squashToProbability(53)).toBe(73);
+  it("maps 48 raw points to 70% (the live Sprint 1 figure)", () => {
+    expect(squashToProbability(48)).toBe(70);
   });
 
   it("maps 40 raw points to 63% and saturates gracefully at high raw scores", () => {
@@ -83,7 +83,7 @@ describe("signal 1: team utilisation (max 40) — factor-adjusted peak", () => {
 
   it("caps at 40 points at 120% utilisation and beyond", () => {
     expect(utilisationPoints([adjusted("A", 120)]).points).toBe(40);
-    expect(utilisationPoints([adjusted("A", 402)]).points).toBe(40);
+    expect(utilisationPoints([adjusted("A", 206)]).points).toBe(40);
   });
 
   it("scores the PEAK developer, not the average", () => {

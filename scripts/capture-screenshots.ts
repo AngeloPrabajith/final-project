@@ -2,7 +2,7 @@
  * Automated screenshot capture for the dissertation figures.
  *
  * Run via `npm run screenshots` (which reseeds the DEMO database first so the
- * engineered numbers — Angelo at 402%, Sprint 1 forecast ~73% high — are live).
+ * engineered numbers — Angelo at 161%, Sprint 1 forecast ~70% high — are live).
  * Starts the dev server itself if nothing is listening on :3000.
  *
  * Output: docs/screenshots/NN-name.png (1440×900 viewport, light theme) plus a
@@ -248,7 +248,7 @@ async function main() {
       file: "07-sprint-forecast-card.png",
       role: "manager",
       route: "/sprints/[id] (Sprint 1)",
-      shows: "ForecastCard: failure probability (~73%, High risk), headline, and all five contributor signals with points and plain-English detail",
+      shows: "ForecastCard: failure probability (~70%, High risk), headline, and all five contributor signals with points and plain-English detail",
       caption:
         "Figure: the five-signal sprint forecast. Each contributor is shown with its points and rationale, keeping the model explainable rather than black-box.",
     });
@@ -264,12 +264,22 @@ async function main() {
         file: "08-capacity-cards.png",
         role: "manager",
         route: "/sprints/[id] (Sprint 1)",
-        shows: "Per-developer capacity cards. Angelo: ×1.28 factor badge, 90h active / 22.4h effective (402%), 12h/wk meetings, 'Shared with 1 other sprint · ×0.50 multi-project' naming Sprint 3",
+        shows: "Per-developer capacity cards. Angelo: ×1.28 factor badge, 36h active / 22.4h effective (161%), adj. 17.5h (206%), 12h/wk meetings, 'Shared with 1 other sprint · ×0.50 multi-project' naming Sprint 3",
         caption:
           "Figure: per-developer capacity cards showing the full multiplier chain — meetings, buffer, and the cross-sprint allocation factor compose into 22.4h effective capacity.",
         note: "The breakdown lines are always visible on these cards; nothing needed expanding.",
       }
     );
+
+    await m.getByText("Rebalancing Suggestions").waitFor();
+    await shotElement(card(m, "Rebalancing Suggestions"), m, {
+      file: "09-rebalancing.png",
+      role: "manager",
+      route: "/sprints/[id] (Sprint 1)",
+      shows: "Rebalancing panel: 'Mini cart UX improvements' (6h, medium) from Angelo to Kusalni, with projected utilisation for both (Angelo 134%, Kusalni 99%) and one-click Apply",
+      caption:
+        "Figure: automated rebalancing suggestion — the lowest-priority task that fits a teammate's remaining headroom is proposed for reassignment, with projected post-move utilisation for both developers.",
+    });
 
     await shotElement(card(m, "Sprint Progress"), m, {
       file: "10-burndown.png",
@@ -328,31 +338,6 @@ async function main() {
       note: "Dismissed with Escape (the dialog's cancel path) after capture, so the task's status was not changed.",
     });
     await m.keyboard.press("Escape");
-
-    // Rebalancing: on Sprint 1 no recipient has enough headroom, so the panel
-    // (correctly) renders nothing. Sprint 3 has a genuine suggestion — Nomal
-    // overloaded, Angelo with headroom — so the capture uses that sprint.
-    await m.goto("/projects");
-    await m.getByText("Only Human · Concurrent stretch").first().click();
-    await m.waitForURL("**/projects/**");
-    await m.getByText("Sprint 3 · Only Human launch stretch").first().waitFor();
-    await settle(m);
-    await card(m, "Sprint 3 · Only Human launch stretch")
-      .getByRole("link", { name: "View Sprint" })
-      .click();
-    await m.waitForURL("**/sprints/**");
-    await m.getByText("Rebalancing Suggestions").waitFor();
-    await settle(m);
-    await shotElement(card(m, "Rebalancing Suggestions"), m, {
-      file: "09-rebalancing.png",
-      role: "manager",
-      route: "/sprints/[id] (Sprint 3)",
-      shows: "Rebalancing panel: task, hours, priority, from → to developer, projected utilisation for both, one-click Apply",
-      caption:
-        "Figure: automated rebalancing suggestions — moving a low-priority task off an overloaded developer to one with genuine headroom, with projected post-move utilisation for both.",
-      note:
-        "Discrepancy vs. brief: on Sprint 1 the algorithm correctly produces no suggestions (every potential recipient is overloaded or lacks headroom for any candidate task), so the panel renders nothing there. Captured on Sprint 3 · Only Human launch stretch, where a genuine suggestion exists. This is the algorithm working as designed, not a missing feature.",
-    });
 
     // Retrospective notes carry seeded text only on HISTORIC sprints, so this
     // capture uses Sprint 0 rather than Sprint 1 (recorded as a discrepancy).
@@ -475,7 +460,7 @@ async function main() {
       file: "22-my-work-overview.png",
       role: "developer",
       route: "/my-work",
-      shows: "Top of My Work: open tasks (8 / 132h), sprints in flight (2), own estimation accuracy, per-sprint load cards with 402% overload",
+      shows: "Top of My Work: open tasks (8 / 78h), sprints in flight (2), own estimation accuracy, per-sprint load cards with Sprint 1 at 161% overload",
       caption:
         "Figure: the developer's personal view — the only screen showing one person's total commitment across concurrent sprints. Teammates are absent from the API response, not hidden by the UI.",
       mode: "viewport",

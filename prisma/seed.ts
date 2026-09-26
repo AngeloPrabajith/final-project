@@ -634,7 +634,11 @@ async function main() {
   const abdulaziz = developers.find((d) => d.name === "Abdulaziz Roshan")!;
   const saajid = developers.find((d) => d.name === "Saajid Jiffrey")!;
 
-  // Sprint 1 — overloaded (Angelo 90h active vs 64h effective capacity).
+  // Sprint 1 — overloaded, but only visibly so once capacity is modelled:
+  // Angelo's 36h looks under half-loaded against a nominal 80h fortnight,
+  // yet meetings, buffer and his second concurrent sprint leave him 22.4h
+  // effective here (~161%). Across both of his sprints he is ~112% loaded,
+  // so the overload is real rather than an artefact of the 50/50 split.
   // Task statuses span the full workflow so every column has content on the board.
   type CurrentTaskStatus =
     | "backlog"
@@ -653,12 +657,12 @@ async function main() {
     type: "planned" | "adhoc";
     assignedDeveloperId: string;
   }> = [
-    { title: "PDP FAQ module", description: "CMS-driven accordion FAQ on product detail pages.", estimatedHours: 20, priority: "high", status: "inprogress", type: "planned", assignedDeveloperId: angelo.id },
-    { title: "Collection page one-card module", description: "Single-card collection layout option with A/B test slot.", estimatedHours: 30, priority: "high", status: "todo", type: "planned", assignedDeveloperId: angelo.id },
-    { title: "Mini cart UX improvements", description: "Slide-out cart: upsell slot, free-shipping meter, quantity stepper.", estimatedHours: 25, priority: "medium", status: "backlog", type: "planned", assignedDeveloperId: angelo.id },
-    { title: "Urgent: PDP hero video not playing", description: "Hero and swipe video payload failing on iOS Safari; investigate delivery.", estimatedHours: 15, priority: "critical", status: "paused", type: "adhoc", assignedDeveloperId: angelo.id },
-    { title: "Checkout upsells (Checkout Extensibility)", description: "Native upsell blocks via Checkout Extensibility + Functions.", estimatedHours: 25, priority: "high", status: "qa", type: "planned", assignedDeveloperId: nomal.id },
-    { title: "Launchpad scheduled product drops", description: "Automated scheduled sales and drop workflows via Launchpad.", estimatedHours: 30, priority: "high", status: "todo", type: "planned", assignedDeveloperId: nomal.id },
+    { title: "PDP FAQ module", description: "CMS-driven accordion FAQ on product detail pages.", estimatedHours: 10, priority: "high", status: "inprogress", type: "planned", assignedDeveloperId: angelo.id },
+    { title: "Collection page one-card module", description: "Single-card collection layout option with A/B test slot.", estimatedHours: 12, priority: "high", status: "todo", type: "planned", assignedDeveloperId: angelo.id },
+    { title: "Mini cart UX improvements", description: "Slide-out cart: upsell slot, free-shipping meter, quantity stepper.", estimatedHours: 6, priority: "medium", status: "backlog", type: "planned", assignedDeveloperId: angelo.id },
+    { title: "Urgent: PDP hero video not playing", description: "Hero and swipe video payload failing on iOS Safari; investigate delivery.", estimatedHours: 8, priority: "critical", status: "paused", type: "adhoc", assignedDeveloperId: angelo.id },
+    { title: "Checkout upsells (Checkout Extensibility)", description: "Native upsell blocks via Checkout Extensibility + Functions.", estimatedHours: 8, priority: "high", status: "qa", type: "planned", assignedDeveloperId: nomal.id },
+    { title: "Launchpad scheduled product drops", description: "Automated scheduled sales and drop workflows via Launchpad.", estimatedHours: 8, priority: "high", status: "todo", type: "planned", assignedDeveloperId: nomal.id },
     { title: "Mobile collection page hover states", description: "Touch-friendly quick-view interactions on collection cards.", estimatedHours: 20, priority: "medium", status: "uat", type: "planned", assignedDeveloperId: kusalni.id },
     { title: "Storefront search relevance tuning", description: "Typo tolerance and synonym handling in site search.", estimatedHours: 15, priority: "medium", status: "readyforprod", type: "planned", assignedDeveloperId: kusalni.id },
     { title: "Homepage video module", description: "Autoplaying muted hero video with reduced-motion fallback.", estimatedHours: 14, priority: "low", status: "todo", type: "planned", assignedDeveloperId: saajid.id },
@@ -829,7 +833,7 @@ async function main() {
   console.log("  MANAGER   admin@sprintplanner.com        full access");
   console.log("  MANAGER   lead@sprintplanner.com         full access");
   console.log("");
-  console.log("  DEVELOPER angelo@sprintplanner.com        overloaded, ×1.28, 2 concurrent sprints");
+  console.log("  DEVELOPER angelo@sprintplanner.com        overloaded (~161%), ×1.28, 2 concurrent sprints");
   console.log("  DEVELOPER nomal@sprintplanner.com          accurate estimator, cross-sprint");
   console.log("  DEVELOPER kusalni@sprintplanner.com        over-estimator (×0.81)");
   console.log("  DEVELOPER abdulaziz@sprintplanner.com         new hire, low-confidence factor");
