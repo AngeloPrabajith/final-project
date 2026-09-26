@@ -300,7 +300,13 @@ async function main() {
     });
 
     // Kanban needs a wider viewport: 8 columns × 260px overflow 1440px.
-    const toggle = m.locator("div.flex.rounded-lg.border button");
+    // Scoped to the Tasks header: rebalancing suggestion rows share the same
+    // "rounded-lg border" classes and carry an Apply button, so an unscoped
+    // locator can click Apply and reassign a task in the demo data.
+    const toggle = m
+      .getByRole("heading", { name: "Tasks" })
+      .locator("xpath=..")
+      .locator("div.rounded-lg.border button");
     await toggle.nth(1).click();
     await m.getByText("Released to Prod").first().waitFor();
     await m.setViewportSize(WIDE_VIEWPORT);
