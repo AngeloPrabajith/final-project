@@ -6,12 +6,16 @@ import type {
   ForecastRiskBand,
   SprintForecast,
 } from "@/types";
-import { computeSprintCapacity } from "@/services/overload-detection";
+import {
+  buildCapacityAnalysis,
+  computeSprintCapacity,
+  getSprintWeeks,
+  resolveMultiProjectFactor,
+} from "@/services/overload-detection";
 import {
   applyAccuracyToCapacity,
   computeAllAccuracies,
 } from "@/services/estimation-accuracy.service";
-import { computeMultiProjectFactor } from "@/services/multi-project-capacity.service";
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -226,8 +230,8 @@ export function squashToProbability(rawPoints: number): number {
  *   `CapacityRecord` history — preserved behaviour).
  * - When `asOf` is provided, treat tasks completed after `asOf` as still
  *   active (they were not yet "done" at that vantage point) and compute
- *   capacity locally with the same buffer / meeting-hours / multi-project
- *   formula. Skip the CapacityRecord upsert so retroactive evaluation never
+ *   capacity locally through the engine's shared `buildCapacityAnalysis`
+ *   chain. Skip the CapacityRecord upsert so retroactive evaluation never
  *   mutates history.
  */
 async function buildCapacityAnalyses(
@@ -243,12 +247,7 @@ async function buildCapacityAnalyses(
   });
   if (!sprint) throw new Error("Sprint not found");
 
-  const sprintWeeks = Math.max(
-    1,
-    Math.round(
-      (sprint.endDate.getTime() - sprint.startDate.getTime()) / (MS_PER_DAY * 7)
-    )
-  );
+  const sprintWeeks = getSprintWeeks(sprint.startDate, sprint.endDate);
   const capacityBuffer = sprint.capacityBuffer ?? 0.2;
 
   const activeHoursMap = new Map<string, number>();
@@ -284,53 +283,16 @@ async function buildCapacityAnalyses(
 
   const analyses: CapacityAnalysis[] = [];
   for (const dev of developers) {
-    const assignedHours = activeHoursMap.get(dev.id) ?? 0;
-    const completedHours = completedHoursMap.get(dev.id) ?? 0;
-    const meetingHoursPerWeek = dev.meetingHoursPerWeek ?? 0;
-    const netWeekly = Math.max(0, dev.weeklyCapacityHours - meetingHoursPerWeek);
-    const capacityHours = netWeekly * sprintWeeks;
-
-    let multi;
-    try {
-      multi = await computeMultiProjectFactor(dev.id, sprintId);
-    } catch {
-      multi = {
-        concurrentSprintCount: 0,
-        allocationFactor: 1,
-        contextSwitchFactor: 1,
-        combinedFactor: 1,
-        overlappingSprintNames: [],
-      };
-    }
-
-    const effectiveCapacityHours =
-      Math.round(
-        capacityHours * (1 - capacityBuffer) * multi.combinedFactor * 10
-      ) / 10;
-    const overloadRisk = assignedHours > effectiveCapacityHours;
-    const utilizationPercent =
-      effectiveCapacityHours === 0
-        ? assignedHours > 0
-          ? 100
-          : 0
-        : Math.round((assignedHours / effectiveCapacityHours) * 100);
-
-    analyses.push({
-      developerId: dev.id,
-      developerName: dev.name,
-      assignedHours,
-      completedHours,
-      capacityHours,
-      effectiveCapacityHours,
-      utilizationPercent,
-      overloadRisk,
-      meetingHoursPerWeek,
-      multiProjectFactor: multi.combinedFactor,
-      allocationFactor: multi.allocationFactor,
-      contextSwitchFactor: multi.contextSwitchFactor,
-      concurrentSprintCount: multi.concurrentSprintCount,
-      overlappingSprintNames: multi.overlappingSprintNames,
-    });
+    analyses.push(
+      buildCapacityAnalysis({
+        developer: dev,
+        sprintWeeks,
+        capacityBuffer,
+        multi: await resolveMultiProjectFactor(dev.id, sprintId),
+        assignedHours: activeHoursMap.get(dev.id) ?? 0,
+        completedHours: completedHoursMap.get(dev.id) ?? 0,
+      })
+    );
   }
   return analyses;
 }

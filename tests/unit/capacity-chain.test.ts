@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildCapacityAnalysis,
   calculateCapacity,
   calculateAssignedHours,
   detectOverload,
@@ -54,6 +55,49 @@ describe("capacity chain — handbook worked example (Angelo in Sprint 1)", () =
     const nominalFortnight = weekly * sprintWeeks; // 80h, what a task tracker assumes
     expect(getOverloadPercentage(36, nominalFortnight)).toBe(45);
     expect(detectOverload(36, nominalFortnight)).toBe(false);
+  });
+});
+
+describe("buildCapacityAnalysis — the one chain every capacity path uses", () => {
+  const halfShared = {
+    concurrentSprintCount: 1,
+    allocationFactor: 0.5,
+    contextSwitchFactor: 1,
+    combinedFactor: 0.5,
+    overlappingSprintNames: ["Sprint 3"],
+  };
+
+  it("reproduces the worked example end to end: 56h → 22.4h effective, 161%, overloaded", () => {
+    const analysis = buildCapacityAnalysis({
+      developer: { id: "d1", name: "Angelo", weeklyCapacityHours: 40, meetingHoursPerWeek: 12 },
+      sprintWeeks: 2,
+      capacityBuffer: 0.2,
+      multi: halfShared,
+      assignedHours: 36,
+      completedHours: 0,
+    });
+    expect(analysis).toMatchObject({
+      capacityHours: 56,
+      effectiveCapacityHours: 22.4,
+      utilizationPercent: 161,
+      overloadRisk: true,
+      meetingHoursPerWeek: 12,
+      multiProjectFactor: 0.5,
+    });
+  });
+
+  it("clamps net capacity to zero when meetings exceed weekly hours", () => {
+    const analysis = buildCapacityAnalysis({
+      developer: { id: "d1", name: "Dev", weeklyCapacityHours: 10, meetingHoursPerWeek: 15 },
+      sprintWeeks: 2,
+      capacityBuffer: 0.2,
+      multi: halfShared,
+      assignedHours: 5,
+      completedHours: 0,
+    });
+    expect(analysis.capacityHours).toBe(0);
+    expect(analysis.effectiveCapacityHours).toBe(0);
+    expect(analysis.utilizationPercent).toBe(100);
   });
 });
 

@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import {
+  buildCapacityAnalysis,
   computeSprintCapacity,
+  getSprintWeeks,
+  resolveMultiProjectFactor,
   simulateTaskAddition,
 } from "./overload-detection";
 import type { CapacityAnalysis, SimulationResult } from "@/types";
@@ -30,23 +33,21 @@ export async function simulateAdHocTask(
     });
     if (!sprint) throw new Error("Sprint not found");
 
-    const diffMs = sprint.endDate.getTime() - sprint.startDate.getTime();
-    const sprintWeeks = Math.max(
-      1,
-      Math.round(diffMs / (1000 * 60 * 60 * 24 * 7))
-    );
-    const capacityHours = dev.weeklyCapacityHours * sprintWeeks;
-
-    const emptyAnalysis: CapacityAnalysis = {
-      developerId: dev.id,
-      developerName: dev.name,
+    // The developer has no tasks here yet, so they are absent from the live
+    // analyses — but they must be judged against the same chain as everyone
+    // already on the sprint. For the multi-project factor we model them as
+    // having joined it: computeMultiProjectFactor counts their *other*
+    // overlapping sprints, which is exactly their concurrency once this ad-hoc
+    // task lands on them. (Joining would also dilute their capacity in those
+    // other sprints; the simulator reports this sprint only.)
+    const emptyAnalysis = buildCapacityAnalysis({
+      developer: dev,
+      sprintWeeks: getSprintWeeks(sprint.startDate, sprint.endDate),
+      capacityBuffer: sprint.capacityBuffer,
+      multi: await resolveMultiProjectFactor(dev.id, sprintId),
       assignedHours: 0,
       completedHours: 0,
-      capacityHours,
-      effectiveCapacityHours: capacityHours,
-      utilizationPercent: 0,
-      overloadRisk: false,
-    };
+    });
 
     return simulateTaskAddition(emptyAnalysis, additionalHours);
   }

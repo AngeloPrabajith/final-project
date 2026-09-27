@@ -7,7 +7,10 @@ import type {
   BurndownData,
   BurndownStatus,
 } from "@/types";
-import { computeMultiProjectFactor } from "@/services/multi-project-capacity.service";
+import {
+  computeMultiProjectFactor,
+  type MultiProjectFactor,
+} from "@/services/multi-project-capacity.service";
 
 export function calculateCapacity(
   weeklyHours: number,
@@ -37,10 +40,80 @@ export function getOverloadPercentage(
   return Math.round((assignedHours / effectiveCapacityHours) * 100);
 }
 
-function getSprintWeeks(startDate: Date, endDate: Date): number {
+export function getSprintWeeks(startDate: Date, endDate: Date): number {
   const diffMs = endDate.getTime() - startDate.getTime();
   const diffWeeks = diffMs / (1000 * 60 * 60 * 24 * 7);
   return Math.max(1, Math.round(diffWeeks));
+}
+
+/**
+ * The developer's multi-project factor for a sprint, falling through to a
+ * neutral 1.0 if the lookup fails so the base engine is never broken.
+ */
+export async function resolveMultiProjectFactor(
+  developerId: string,
+  sprintId: string
+): Promise<MultiProjectFactor> {
+  try {
+    return await computeMultiProjectFactor(developerId, sprintId);
+  } catch {
+    return {
+      concurrentSprintCount: 0,
+      allocationFactor: 1,
+      contextSwitchFactor: 1,
+      combinedFactor: 1,
+      overlappingSprintNames: [],
+    };
+  }
+}
+
+/**
+ * Pure: the capacity chain (handbook §3) for one developer in one sprint.
+ *   net       = max(0, weekly − meetings)
+ *   capacity  = net × sprintWeeks
+ *   effective = capacity × (1 − buffer) × multi-project factor
+ * Every path that judges a developer against capacity (live engine,
+ * retroactive forecast, ad-hoc simulator) must build its analysis here so the
+ * multipliers cannot drift apart.
+ */
+export function buildCapacityAnalysis(input: {
+  developer: {
+    id: string;
+    name: string;
+    weeklyCapacityHours: number;
+    meetingHoursPerWeek?: number | null;
+  };
+  sprintWeeks: number;
+  capacityBuffer: number;
+  multi: MultiProjectFactor;
+  assignedHours: number;
+  completedHours: number;
+}): CapacityAnalysis {
+  const { developer: dev, multi, assignedHours } = input;
+  const meetingHoursPerWeek = dev.meetingHoursPerWeek ?? 0;
+  const netWeeklyHours = Math.max(0, dev.weeklyCapacityHours - meetingHoursPerWeek);
+  const capacityHours = calculateCapacity(netWeeklyHours, input.sprintWeeks);
+  const effectiveCapacityHours =
+    Math.round(
+      capacityHours * (1 - input.capacityBuffer) * multi.combinedFactor * 10
+    ) / 10;
+
+  return {
+    developerId: dev.id,
+    developerName: dev.name,
+    assignedHours,
+    completedHours: input.completedHours,
+    capacityHours,
+    effectiveCapacityHours,
+    utilizationPercent: getOverloadPercentage(assignedHours, effectiveCapacityHours),
+    overloadRisk: detectOverload(assignedHours, effectiveCapacityHours),
+    meetingHoursPerWeek,
+    multiProjectFactor: multi.combinedFactor,
+    allocationFactor: multi.allocationFactor,
+    contextSwitchFactor: multi.contextSwitchFactor,
+    concurrentSprintCount: multi.concurrentSprintCount,
+    overlappingSprintNames: multi.overlappingSprintNames,
+  };
 }
 
 /**
@@ -92,41 +165,17 @@ export async function computeSprintCapacity(
   for (const dev of developers) {
     if (!allAssignedDevIds.has(dev.id)) continue;
 
-    const assignedHours = activeHoursMap.get(dev.id) ?? 0;
-    const completedHours = completedHoursMap.get(dev.id) ?? 0;
-    const meetingHoursPerWeek =
-      (dev as { meetingHoursPerWeek?: number | null }).meetingHoursPerWeek ?? 0;
-    const netWeeklyHours = Math.max(
-      0,
-      dev.weeklyCapacityHours - meetingHoursPerWeek
-    );
-    const capacityHours = calculateCapacity(netWeeklyHours, sprintWeeks);
-
-    // Multi-project factor: never break the base engine if the helper fails.
-    let multi;
-    try {
-      multi = await computeMultiProjectFactor(dev.id, sprintId);
-    } catch {
-      multi = {
-        concurrentSprintCount: 0,
-        allocationFactor: 1,
-        contextSwitchFactor: 1,
-        combinedFactor: 1,
-        overlappingSprintNames: [],
-      };
-    }
-
-    const effectiveCapacityHours =
-      Math.round(
-        capacityHours * (1 - capacityBuffer) * multi.combinedFactor * 10
-      ) / 10;
-    const overloadRisk = detectOverload(assignedHours, effectiveCapacityHours);
-    const utilizationPercent = getOverloadPercentage(
-      assignedHours,
-      effectiveCapacityHours
-    );
+    const analysis = buildCapacityAnalysis({
+      developer: dev,
+      sprintWeeks,
+      capacityBuffer,
+      multi: await resolveMultiProjectFactor(dev.id, sprintId),
+      assignedHours: activeHoursMap.get(dev.id) ?? 0,
+      completedHours: completedHoursMap.get(dev.id) ?? 0,
+    });
 
     if (persist) {
+      const { assignedHours, capacityHours, overloadRisk } = analysis;
       await prisma.capacityRecord.upsert({
         where: { developerId_sprintId: { developerId: dev.id, sprintId } },
         update: { assignedHours, capacityHours, overloadRisk },
@@ -134,22 +183,7 @@ export async function computeSprintCapacity(
       });
     }
 
-    analyses.push({
-      developerId: dev.id,
-      developerName: dev.name,
-      assignedHours,
-      completedHours,
-      capacityHours,
-      effectiveCapacityHours,
-      utilizationPercent,
-      overloadRisk,
-      meetingHoursPerWeek,
-      multiProjectFactor: multi.combinedFactor,
-      allocationFactor: multi.allocationFactor,
-      contextSwitchFactor: multi.contextSwitchFactor,
-      concurrentSprintCount: multi.concurrentSprintCount,
-      overlappingSprintNames: multi.overlappingSprintNames,
-    });
+    analyses.push(analysis);
   }
 
   return analyses;

@@ -34,6 +34,35 @@ describe("ad-hoc simulator against the seeded database", () => {
     const after = await prisma.task.count();
     expect(after).toBe(before);
   });
+
+  it("judges a developer not yet on the sprint against the full capacity chain", async () => {
+    // Abdulaziz: 25h/wk, 8h meetings, no Sprint 1 tasks, but assigned in the
+    // concurrent Sprint 2 — so taking ad-hoc work here makes him one of two:
+    //   (25 − 8) × 2wk = 34h × 0.8 buffer = 27.2h × 0.5 multi-project = 13.6h
+    const sprintId = await sprintIdByName("Sprint 1 · PDP experience");
+    const dev = await prisma.developer.findFirstOrThrow({
+      where: { name: "Abdulaziz Roshan" },
+    });
+    // Precondition: this exercises the no-live-analysis fallback path.
+    expect(
+      await prisma.task.count({ where: { sprintId, assignedDeveloperId: dev.id } })
+    ).toBe(0);
+
+    const result = await simulateAdHocTask(sprintId, dev.id, 20);
+
+    expect(result.before).toMatchObject({
+      assignedHours: 0,
+      capacityHours: 34,
+      effectiveCapacityHours: 13.6,
+      meetingHoursPerWeek: 8,
+      multiProjectFactor: 0.5,
+      concurrentSprintCount: 1,
+      overlappingSprintNames: ["Sprint 2 · Email & integrations"],
+    });
+    // 20h is 147% of 13.6h; judged against raw 25h × 2wk = 50h it read as 40%.
+    expect(result.after.utilizationPercent).toBe(147);
+    expect(result.wouldCauseOverload).toBe(true);
+  });
 });
 
 describe("rebalancing suggestions against the overloaded seeded sprint", () => {

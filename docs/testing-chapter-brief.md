@@ -8,7 +8,7 @@
 
 | Artefact | Result |
 |---|---|
-| **Vitest suite** | **135 tests, 14 files, all passing** (~6s wall clock) |
+| **Vitest suite** | **138 tests, 14 files, all passing** (~6s wall clock) |
 | Unit tests | 10 files — pure planning logic, no database |
 | Integration tests | 4 files — real PostgreSQL test database, reseeded every run |
 | Coverage (scoped to `src/services` + `src/lib`) | **75.5% lines / 73.0% statements** overall; **100%** on `redact.ts`, `roles.ts` and the analytical services |
@@ -44,7 +44,7 @@ Named as readable sentences, e.g. `it("floors the allocation factor at 0.25 when
 | File | Proves |
 |---|---|
 | `multi-project-capacity.test.ts` | Allocation `1/(N+1)` at N=0..3 with the 0.25 floor; context-switch `1 − 0.20×max(0,N−1)` with the 0.5 floor; **two concurrent sprints incur no switch penalty** (the literature-derived baseline) |
-| `capacity-chain.test.ts` | The handbook worked example composed from the engine's own exported steps: 40h − 12h meetings × 2wk = 56h → ×0.8 buffer ×0.5 multi-project = **22.4h → 161% overloaded**, and the same 36h reading as only **45% loaded against nominal 80h** (the naive-tracker contrast); buffer edges 0/0.4; zero-capacity division guard (100%, not NaN); exact-boundary overload (22.4 vs 22.5); simulator arithmetic incl. `wouldCauseOverload` only when the addition *causes* it |
+| `capacity-chain.test.ts` | The handbook worked example composed from the engine's own exported steps: 40h − 12h meetings × 2wk = 56h → ×0.8 buffer ×0.5 multi-project = **22.4h → 161% overloaded**, and the same 36h reading as only **45% loaded against nominal 80h** (the naive-tracker contrast); buffer edges 0/0.4; zero-capacity division guard (100%, not NaN); exact-boundary overload (22.4 vs 22.5); simulator arithmetic incl. `wouldCauseOverload` only when the addition *causes* it; `buildCapacityAnalysis` (the single chain the live engine, retroactive forecast and simulator share) reproducing 22.4h / 161% end to end and clamping meetings > weekly to 0h |
 | `sprint-health.test.ts` | 100 baseline; −30/overloaded, −10/at-risk (≥80%), −5 when avg >85%; **band boundaries pinned at exactly 40 and 70**; floor at 0; the recommendation string interpolates developer names (documenting *why* clients never receive it) |
 | `burndown.test.ts` | Classification at the exact +10 / −5 / −20 deltas (each boundary tested on both sides); zero-work sprint; day clamping past sprint end |
 | `estimation-accuracy.test.ts` | Shrinkage `k = max(0,10−n)`: n=1 with a 50% overshoot lands at **1.05** (not 1.5); n=10 equals the raw ratio; neutral 1.0 with no samples; confidence bands at n=4/5/14/15; trend requires n≥8 and the ±0.05 movement rule (improving/degrading/stable each); the 90-day window and **strict `completedAt < asOf`** bound asserted at the query boundary (the no-leakage guarantee); `applyAccuracyToCapacity` divides (22.4/1.28 → 17.5) and never breaks the engine on factor ≤ 0 |
@@ -60,7 +60,7 @@ Named as readable sentences, e.g. `it("floors the allocation factor at 0.25 when
 |---|---|
 | `forecast-evaluation.int.test.ts` | The dissertation's calibration story is pinned: the four historic sprints evaluate to exactly **low/met, moderate/met, high/partial, high/missed** with **2 hits, 0 false alarms, 0 missed alarms** (100% alarm precision), chronologically ordered, each with a named top contributor |
 | `capacity-records.int.test.ts` | The worked example end-to-end from the seeded DB (Angelo: 56h capacity, 22.4h effective, 36h assigned, 161%, ×0.5 factor, overlapping sprint named); paused tasks counted, done tasks excluded (a fully completed sprint shows zero active load); `computeSprintCapacity` upserts **exactly one CapacityRecord per (developer, sprint)** and is idempotent across recomputes; **retroactive forecasts write zero CapacityRecords** and see zero completed hours at `asOf = startDate` while the live view of the same sprint sees them (the leakage-prevention proof); client burndown path does not touch the DB; meeting hours exceeding weekly hours clamp capacity to 0 (scratch fixture) |
-| `simulator-rebalancing.int.test.ts` | Ad-hoc simulator reconciles with the chain and **creates no task row**; rebalancing on the genuinely overloaded seeded sprint emits ≤1 suggestion per overloaded developer, every projection reconciling with the chain, every recipient with real headroom |
+| `simulator-rebalancing.int.test.ts` | Ad-hoc simulator reconciles with the chain and **creates no task row**; a developer not yet on the sprint is judged against the **full chain** (Abdulaziz on Sprint 1: (25−8)×2×0.8×0.5 = **13.6h**, so 20h ad-hoc reads 147% overloaded rather than 40% of a raw 50h); rebalancing on the genuinely overloaded seeded sprint emits ≤1 suggestion per overloaded developer, every projection reconciling with the chain, every recipient with real headroom |
 | `register-role.int.test.ts` | The register endpoint creates `role: "developer"` **even when the body claims `role: "manager"`** (privilege-escalation attempt), leaves the account unlinked (fail-closed), 409 on duplicate email, 400 on missing fields |
 
 ## 6. Two disclosed enabling refactors (behaviour-preserving)
