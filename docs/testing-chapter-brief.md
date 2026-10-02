@@ -11,7 +11,7 @@
 | **Vitest suite** | **138 tests, 14 files, all passing** (~6s wall clock) |
 | Unit tests | 10 files — pure planning logic, no database |
 | Integration tests | 4 files — real PostgreSQL test database, reseeded every run |
-| Coverage (scoped to `src/services` + `src/lib`) | **75.5% lines / 73.0% statements** overall; **100%** on `redact.ts`, `roles.ts` and the analytical services |
+| Coverage (scoped to `src/services` + `src/lib`) | **76.8% lines / 74.05% statements** overall. Lines per file: **100%** on `redact.ts`, `roles.ts`, `task-statuses.ts`, `estimation-accuracy.service.ts`, `multi-project-capacity.service.ts` and `rebalancing.service.ts`; **98.78%** `overload-detection.ts`; **96.68%** `sprint-forecast.service.ts`; **93.54%** `forecast-evaluation.service.ts`; **0%** `authorize.ts` (covered by the HTTP suite instead, see §7). Full table: `docs/test-report.md` |
 | Type safety | `npx tsc --noEmit` clean (strict TypeScript across app + tests) |
 | Complementary suite | `scripts/authz-check.sh` — 48 HTTP-level authorisation checks, 48 passing (pre-existing; NOT part of Vitest — presented as the security layer of the strategy) |
 | Version control | Repo history now exists: `12825b7` "Pre-test-suite baseline" → `fdd2fc1` "Add Vitest unit and integration suite" |

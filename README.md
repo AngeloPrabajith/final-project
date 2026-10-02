@@ -41,7 +41,7 @@ Three roles, three different applications behind one login screen. Access is **e
 
 **Developer — "My Work".** Their tasks across every sprint, their own utilisation per in-flight sprint, their own estimation factor, and a *"Why your capacity is split"* breakdown showing every multiplier the engine applies — hours after meetings, planning buffer, the `1/(N+1)` allocation split, and the context-switch penalty — with the arithmetic reconciling to the final figure. This is the only view in the system that shows one person's **total** commitment across concurrent sprints, which is precisely the multi-project case the interim report names as unaddressed by existing tools. Teammates are invisible: not hidden by the UI, but absent from the API response.
 
-**Client — "Delivery".** Progress on their projects only: completion percentage, sprint burndown, velocity history, and a delivery-confidence traffic light. The forecast is deliberately reduced to a band — the full object's `headline` reads *"74% chance this sprint misses commitment"* and each contributor's `detail` string interpolates developer names, so it is withheld wholesale rather than filtered.
+**Client — "Delivery".** Progress on their projects only: completion percentage, sprint burndown, velocity history, and a delivery-confidence traffic light. The forecast is deliberately reduced to a band — the full object's `headline` reads *"70% chance this sprint misses commitment"* and each contributor's `detail` string interpolates developer names, so it is withheld wholesale rather than filtered.
 
 **Manager — "Team & Access".** Set roles, link a login to a developer profile, and grant clients project access. Guards against demoting the last manager and against the unique-constraint collision when re-linking.
 
@@ -82,7 +82,7 @@ When a task transitions to Done (table dropdown or Kanban drag), a small dialog 
 A separate table captures per-day commit / PR / review counts. Today it's populated by the seed with 12 weeks of believable mock data. Phase 2 will swap in a live GitHub client writing into the same table via `POST /api/activity/ingest`. The `(source, externalRef)` unique constraint makes webhook dedup a one-line change.
 
 **Multi-project capacity modelling** *(new)*
-A developer assigned to N concurrent sprints has each sprint's effective capacity scaled by `1 / (N + 1)` (allocation factor) and `1 − 0.20 × max(0, N − 1)` (context-switch penalty, literature-supported). The capacity card on the sprint page shows "Shared with 2 other sprints · ×0.27 multi-project" when this kicks in (allocation 1/3 × context-switch 0.80). Closes the "multi-project environments" gap the interim report explicitly names.
+A developer assigned to N other concurrent sprints has each sprint's effective capacity scaled by `1 / (N + 1)` (allocation factor) and `1 − 0.20 × max(0, N − 1)` (context-switch penalty, literature-supported). The capacity card on the sprint page shows "Shared with 2 other sprints · ×0.27 multi-project" when this kicks in (allocation 1/3 × context-switch 0.80). Closes the "multi-project environments" gap the interim report explicitly names.
 
 **Meeting-load capacity adjustment** *(new)*
 Each developer has a `meetingHoursPerWeek` field (default 0) that is subtracted from weekly hours before the buffer is applied. Surfaces as a column on the developers page and a tiny line on each capacity card. Phase 2 replaces the static field with live Google Calendar OAuth fetching real meeting hours per week.
@@ -95,10 +95,10 @@ The `/evaluation` page recomputes forecasts retroactively for every completed sp
 ### Capacity Engine
 
 **Configurable Capacity Buffer per Sprint**
-Each sprint has a `capacityBuffer` field (default 20%). Rather than flagging overload at 100%, the engine flags at `effectiveCapacity = weeklyHours × sprintWeeks × (1 - buffer)`. This mirrors real agile practice — teams plan to ~80% to account for meetings, code review, and interruptions. The buffer is adjustable per sprint (0–40%) via a slider in the sprint form.
+Each sprint has a `capacityBuffer` field (default 20%). Rather than judging work against raw hours, the engine compares it with effective capacity: weekly hours minus meetings, times sprint weeks, times `(1 − buffer)`, times the multi-project factor (full formula under [Core Algorithms](#capacity--overload-detection)). The buffer mirrors real agile practice: teams plan to ~80% to leave room for code review and interruptions (meetings are subtracted separately). The buffer is adjustable per sprint (0–40%) via a slider in the sprint form.
 
 **Done Task Exclusion**
-Completed (`status = "done"`) tasks are excluded from capacity calculations. Only active (`todo` / `inprogress`) tasks count against a developer's load. This prevents artificially inflated utilisation numbers as work is completed during the sprint.
+Only tasks in **Released to Prod** (`status = "done"`) are excluded from capacity calculations. Every other status counts against a developer's load: Backlog, To Do, In Progress, **Paused**, QA, UAT and Ready for Prod. Paused work still counts because the task is still assigned to that developer. This keeps utilisation honest as work is completed during the sprint.
 
 **Overload Warning Toasts**
 When a task is added and it pushes a developer over their effective capacity, a non-blocking warning toast fires immediately — no need to navigate to the capacity page to find out.
@@ -108,12 +108,12 @@ When a task is added and it pushes a developer over their effective capacity, a 
 ### Sprint Intelligence
 
 **Sprint Health Score (0–100)**
-A computed score shown on every sprint page as a colour-coded badge:
-- `healthy` (green) — all developers within capacity
-- `at-risk` (amber) — one or more developers above 80% but not overloaded
-- `overloaded` (red) — one or more developers above effective capacity
+A computed score shown on every sprint page as a colour-coded badge. It starts at 100 and loses points for each overloaded developer, each developer at or above 80%, and a team average above 85% (formula under [Core Algorithms](#sprint-health-score)). The status comes from the score:
+- `healthy` (green): 70 or above
+- `at-risk` (amber): 40 to 69
+- `overloaded` (red): below 40
 
-Score degrades based on number of overloaded developers and average utilisation. A tooltip explains the current state and shows overloaded/at-risk developer counts.
+A tooltip explains the current state and shows overloaded/at-risk developer counts.
 
 **Burndown Indicator**
 Compares *expected progress* (based on calendar days elapsed) against *actual progress* (done task hours / total task hours). Shows four states: Ahead of Schedule, On Track, Behind, At Risk. Displayed as dual progress bars on every sprint page.
@@ -213,11 +213,25 @@ Meaningful empty state illustrations and messages when no sprints or tasks exist
 
 ### Prerequisites
 
-- Node.js 18+
-- PostgreSQL — via Docker (recommended) or a local install
-- npm
+- **Node.js 20.19+** with npm. Prisma 7's engines require Node `^20.19`, `^22.12` or `24+`.
+- **Docker Desktop**, which runs PostgreSQL 16 through Docker Compose.
+- **bash, curl and python3**, needed only for `npm run check:authz`. All three ship with macOS and most Linux distributions.
 
-### Setup
+### Quick start
+
+With Docker Desktop running:
+
+```bash
+npm install
+cp .env.example .env
+npm run demo
+```
+
+`npm run demo` starts PostgreSQL, waits for it, applies the migrations (`prisma migrate deploy`), reseeds the demo data and starts the dev server. Open [http://localhost:3000](http://localhost:3000) and sign in with one of the [demo credentials](#demo-credentials).
+
+The seed sets sprint dates relative to the day it runs, so reseed before any demo or screenshot session: re-run `npm run demo`, or `npm run db:seed` if the server is already up.
+
+### Manual setup (alternative)
 
 **1. Install dependencies**
 
@@ -225,7 +239,7 @@ Meaningful empty state illustrations and messages when no sprints or tasks exist
 npm install
 ```
 
-**2. Start Docker Desktop** (if using Docker).
+**2. Start Docker Desktop.**
 
 **3. Configure environment**
 
@@ -278,7 +292,7 @@ All passwords are `password123`.
 | `admin@sprintplanner.com` | Manager | Full access — the original application |
 | `lead@sprintplanner.com` | Manager | Second manager account |
 | `angelo@sprintplanner.com` | Developer | **The interesting one.** Overloaded (161% — yet only 45% of nominal hours), ×1.28 under-estimator, 12h/wk meetings, two concurrent sprints |
-| `kusalni@sprintplanner.com` | Developer | Over-estimator (×0.80) — the opposite sign |
+| `kusalni@sprintplanner.com` | Developer | Over-estimator (×0.81) — the opposite sign |
 | `abdulaziz@sprintplanner.com` | Developer | New hire — low-confidence factor, shrinkage visible |
 | `nomal@` / `saajid@sprintplanner.com` | Developer | Accurate estimator / improving trend |
 | `newdev@sprintplanner.com` | Developer | **No linked profile** — the fail-closed empty state |
@@ -288,21 +302,36 @@ All passwords are `password123`.
 
 ### Seeded Personas (predictive-layer demo)
 
-The seed intentionally builds a team with distinct estimation behaviours so the predictive layer has meaningful signal immediately after install. Sprint dates pivot around today — the two "current" sprints are always in-flight regardless of when you seed.
+The seed intentionally builds a team with distinct estimation behaviours so the predictive layer has meaningful signal immediately after install. Sprint dates pivot around today: the four historic sprints are always complete, and the three current sprints are always in flight, regardless of when you seed.
 
-| Developer | Weekly hours | Persona | Expected factor |
-|---|---:|---|---:|
-| Angelo Perera | 40 | Chronic under-estimator | ~1.29 |
-| Nomal Ariyarathna | 35 | Accurate | ~1.00 |
-| Kusalni Perera | 30 | Over-estimator (sandbagger) | ~0.80 |
-| Abdulaziz Roshan | 25 | New hire (n≈1, shrinkage) | ~1.00 |
-| Saajid Jiffrey | 35 | Improving trend | ~1.10 |
+| Developer | Weekly hours | Meetings/wk | Persona | Live factor |
+|---|---:|---:|---|---:|
+| Angelo Perera | 40 | 12 | Chronic under-estimator | ×1.28 (n = 15) |
+| Nomal Ariyarathna | 35 | 6 | Accurate | ×1.02 (n = 13) |
+| Kusalni Perera | 30 | 4 | Over-estimator (sandbagger) | ×0.81 (n = 14) |
+| Abdulaziz Roshan | 25 | 8 | New hire (shrinkage pulls one sample towards 1.0) | ×1.01 (n = 1) |
+| Saajid Jiffrey | 35 | 5 | Improving trend | ×1.16 (n = 12) |
 
 **Demo walkthrough (60 seconds):**
 1. Open `/developers` — scan the Estimation Factor column to see each persona.
 2. Open Sprint 1 (*PDP experience*) — forecast card shows **70% · High risk**. Angelo's card shows 36h against 22.4h effective (161%), the `×1.28` factor badge, and an adjusted utilisation of 206%. A rebalancing suggestion proposes moving a 6h task to Kusalni.
-3. Open Sprint 2 (*Email & integrations*) — the healthy contrast: health 100, forecast **22% · Low**, burndown on track (50% done vs 43% expected), every developer under 80%.
+3. Open Sprint 2 (*Email & integrations*) — the healthy contrast: health 100, forecast **22% · Low**, burndown **ahead** on the day you seed (50% done vs 36% expected at day 5), settling to on track from day 6 (50% vs 43%), every developer under 80%.
 4. Move any task in Sprint 1 to Done → the "How long did it take?" dialog appears → confirm or skip. The forecast and factor refetch automatically.
+
+---
+
+## Testing
+
+The Vitest suite needs the Docker database to be running (`npm run db:up`).
+
+| Command | What it does |
+|---|---|
+| `npm test` | Runs the Vitest suite: 138 tests in 14 files (10 unit, 4 integration). |
+| `npm run test:report` | Runs the same suite with coverage and writes [docs/test-report.md](docs/test-report.md): a pass/fail table per test, plus line coverage for `src/services` and `src/lib` (76.8% at submission). |
+| `npm run check:authz` | Runs 48 HTTP-level access-control checks with manager, developer and client tokens. **The dev server must be running against the seeded database.** One check changes a task's status, so run `npm run db:seed` afterwards. Needs bash, curl and python3. |
+| `npx tsc --noEmit` | Strict type check across the app and the tests. |
+
+The integration tests never touch the demo database. They use a separate `sprint_planner_test` database on the same PostgreSQL server, which the test setup creates automatically, then migrates and reseeds on every run. Set `DATABASE_URL_TEST` to point them somewhere else.
 
 ---
 
@@ -311,51 +340,110 @@ The seed intentionally builds a team with distinct estimation behaviours so the 
 ```
 src/
 ├── app/
-│   ├── api/                        # REST API routes (auth, projects, sprints, tasks, developers, dashboard)
-│   │   └── projects/[id]/velocity/ # Velocity data endpoint
-│   ├── (authenticated)/
-│   │   ├── page.tsx                # Dashboard
-│   │   ├── capacity/               # Capacity analysis + heatmap + simulator
-│   │   ├── developers/             # Developer management
-│   │   ├── projects/[id]/          # Project detail + sprint grid + velocity chart
-│   │   ├── settings/               # Theme, profile, sprint defaults, notifications
-│   │   └── sprints/[id]/           # Sprint detail — health, burndown, kanban/table, rebalancing, retrospective
+│   ├── api/                             # REST routes: auth, me, admin, dashboard, projects, sprints,
+│   │                                    #   tasks, developers, evaluation, portfolio, activity
+│   ├── login/                           # Sign-in page
+│   ├── register/                        # Self-registration (creates an unlinked developer account)
+│   └── (authenticated)/
+│       ├── page.tsx                     # Sends each role to its landing page
+│       ├── dashboard/                   # Manager dashboard
+│       ├── my-work/                     # Developer: own tasks, load per sprint, capacity breakdown
+│       ├── portfolio/                   # Client: delivery overview of granted projects
+│       │   └── [projectId]/             # Client: one project's progress, burndown, velocity
+│       ├── evaluation/                  # Manager: retroactive forecast-vs-actual evaluation
+│       ├── admin/users/                 # Manager: Team & Access (roles, developer links, client grants)
+│       ├── capacity/                    # Capacity analysis + heatmap + ad-hoc simulator
+│       ├── developers/                  # Developer management + estimation-accuracy column
+│       ├── projects/                    # Project list
+│       │   └── [id]/                    # Project detail + sprint grid + velocity chart
+│       ├── settings/                    # Theme, profile, sprint defaults, notifications
+│       └── sprints/[id]/                # Sprint detail: health, burndown, forecast, kanban/table,
+│                                        #   rebalancing, retrospective
 ├── components/
+│   ├── auth-provider.tsx                # Session, token and resolved role
+│   ├── query-provider.tsx
+│   ├── brand/
+│   │   └── cadence-logo.tsx
 │   ├── capacity/
+│   │   ├── adhoc-simulator.tsx
 │   │   ├── capacity-chart.tsx
 │   │   ├── developer-capacity-heatmap.tsx
 │   │   ├── developer-workload-table.tsx
-│   │   └── adhoc-simulator.tsx
+│   │   └── overload-badge.tsx
+│   ├── client/                          # Client views: no per-developer data
+│   │   ├── delivery-confidence.tsx      # Forecast reduced to a band and a label
+│   │   └── project-progress-card.tsx
 │   ├── dashboard/
-│   │   ├── stats-cards.tsx
+│   │   ├── active-sprints.tsx
+│   │   ├── at-risk-sprints.tsx
 │   │   ├── capacity-summary.tsx
-│   │   └── at-risk-sprints.tsx
+│   │   └── stats-cards.tsx
+│   ├── developers/
+│   │   └── accuracy-cell.tsx
 │   ├── layout/
 │   │   ├── app-sidebar.tsx
 │   │   ├── header.tsx
 │   │   └── user-menu.tsx
+│   ├── my-work/
+│   │   ├── cross-sprint-load.tsx        # "Why your capacity is split": the multiplier chain
+│   │   └── my-capacity-card.tsx         # One in-flight sprint's load for the signed-in developer
 │   ├── projects/
+│   │   ├── project-card.tsx
+│   │   ├── project-form.tsx
 │   │   └── velocity-chart.tsx
 │   ├── sprints/
-│   │   ├── sprint-form.tsx
-│   │   ├── sprint-health-badge.tsx
 │   │   ├── burndown-indicator.tsx
+│   │   ├── forecast-card.tsx
 │   │   ├── rebalancing-suggestions.tsx
-│   │   └── retrospective-notes.tsx
-│   └── tasks/
-│       ├── task-table.tsx          # Sortable columns, search, filter
-│       ├── task-form.tsx
-│       ├── task-kanban.tsx         # Drag-and-drop Kanban board
-│       └── task-card.tsx
-├── hooks/                          # React Query hooks per entity
-├── lib/                            # Prisma client, JWT auth, API client
+│   │   ├── retrospective-notes.tsx
+│   │   ├── sprint-form.tsx
+│   │   └── sprint-health-badge.tsx
+│   ├── tasks/
+│   │   ├── actual-hours-prompt.tsx      # "How long did it actually take?" on moving to Done
+│   │   ├── task-card.tsx
+│   │   ├── task-form.tsx
+│   │   ├── task-kanban.tsx              # Drag-and-drop Kanban board
+│   │   └── task-table.tsx               # Sortable columns, search, filter
+│   └── ui/                              # shadcn / Base UI primitives
+├── generated/prisma/                    # Generated Prisma client
+├── hooks/                               # React Query hooks per entity
+├── lib/
+│   ├── api-client.ts                    # Browser fetch wrapper (attaches the JWT)
+│   ├── auth.ts                          # JWT sign/verify (8-hour tokens)
+│   ├── authorize.ts                     # Per-request role, developer and project scope; access guards
+│   ├── prisma.ts                        # Prisma client (pg driver adapter)
+│   ├── redact.ts                        # Whitelist-only response shapes for developers and clients
+│   ├── roles.ts                         # Role vocabulary, legacy aliases, fail-closed default, landing paths
+│   ├── route-access.ts                  # Which roles may open which page (UI only; the API is the boundary)
+│   ├── task-statuses.ts                 # The eight workflow statuses; only "done" is terminal
+│   └── utils.ts
 ├── services/
-│   ├── overload-detection.ts       # Core capacity, health, burndown algorithms
-│   ├── capacity.service.ts
-│   ├── sprint.service.ts
+│   ├── overload-detection.ts            # Capacity chain, health score, burndown, simulation
+│   ├── capacity.service.ts              # Sprint capacity + ad-hoc simulator entry points
+│   ├── multi-project-capacity.service.ts # Allocation and context-switch factors
+│   ├── estimation-accuracy.service.ts   # Per-developer accuracy factor with shrinkage
+│   ├── sprint-forecast.service.ts       # Five-signal sprint failure forecast
+│   ├── forecast-evaluation.service.ts   # Retroactive forecast-vs-actual evaluation
+│   ├── rebalancing.service.ts           # Task-move suggestions for overloaded developers
+│   ├── sprint.service.ts                # Sprint CRUD + overlapping-sprint lookup
+│   ├── developer.service.ts
+│   ├── project.service.ts
 │   └── task.service.ts
-├── types/                          # TypeScript type definitions
+├── types/                               # TypeScript type definitions
 └── utils/
+prisma/
+├── schema.prisma
+├── migrations/
+└── seed.ts                              # Demo team, 7 sprints, dates relative to the day it runs
+tests/
+├── unit/                                # 10 files: pure planning logic, no database
+├── integration/                         # 4 files: run against the sprint_planner_test database
+└── setup/                               # Points tests at the test database; creates, migrates and reseeds it
+scripts/
+├── authz-check.sh                       # npm run check:authz
+├── generate-test-report.mjs             # npm run test:report → docs/test-report.md
+└── capture-screenshots.ts               # npm run screenshots (Playwright, report figures)
+docs/                                    # Design notes, test report, report data, screenshots
 ```
 
 ---
@@ -365,46 +453,53 @@ src/
 ### Capacity & Overload Detection
 
 ```
-capacity_hours      = developer.weeklyCapacityHours × sprint_duration_weeks
-effective_capacity  = capacity_hours × (1 - sprint.capacityBuffer)
-assigned_hours      = SUM(estimatedHours for tasks WHERE status != 'done')
-utilization_percent = (assigned_hours / effective_capacity) × 100
-overload_risk       = utilization_percent > 100
+net_weekly_hours    = max(0, developer.weeklyCapacityHours − developer.meetingHoursPerWeek)
+capacity_hours      = net_weekly_hours × sprint_weeks          # sprint_weeks = round(days / 7), min 1
+
+N                   = other sprints whose dates overlap this one and in which the developer has a task
+allocation_factor   = max(0.25, 1 / (N + 1))                    # equal split across concurrent sprints
+context_switch      = max(0.5, 1 − 0.20 × max(0, N − 1))        # no penalty for 2 sprints, −20% per extra one
+
+effective_capacity  = capacity_hours × (1 − sprint.capacityBuffer) × allocation_factor × context_switch
+assigned_hours      = SUM(estimatedHours of the developer's tasks WHERE status != 'done')
+utilization_percent = round(assigned_hours / effective_capacity × 100)
+overload_risk       = assigned_hours > effective_capacity
 ```
+
+Worked example (Angelo in Sprint 1): (40 − 12) × 2 = 56h × 0.8 buffer × 0.5 allocation = **22.4h effective**. 36h assigned gives **161%**, overloaded, even though 36h is only 45% of a nominal 80-hour fortnight.
 
 ### Sprint Health Score
 
 ```
-score = 100
-for each developer:
-    if overloaded (utilization > 100%):
-        score -= 30
-    else if at-risk (utilization > 80%):
-        score -= 10
+score  = 100
+score -= 30 × (developers with assigned_hours > effective_capacity)     # overloaded
+score -= 10 × (other developers with utilization_percent >= 80)         # at-risk
+score -=  5 if average utilization_percent > 85
+score  = max(0, score)
 
-status = "overloaded" if any overloaded
-       | "at-risk"    if score < 80
+status = "overloaded" if score < 40
+       | "at-risk"    if score < 70
        | "healthy"
 ```
 
 ### Burndown
 
 ```
-expected_progress = (days_elapsed / total_sprint_days) × 100
-actual_progress   = (done_task_hours / total_task_hours) × 100
-delta             = actual_progress - expected_progress
+expected_progress = days_elapsed / total_sprint_days × 100     # days rounded to the nearest whole day
+actual_progress   = done_task_hours / total_task_hours × 100
+delta             = actual_progress − expected_progress
 
 status = "ahead"    if delta > +10
-       | "on-track"  if delta >= -10
-       | "behind"    if delta >= -25
-       | "at-risk"   if delta < -25
+       | "at-risk"  if delta < −20
+       | "behind"   if delta < −5
+       | "on-track" otherwise
 ```
 
 ### Rebalancing Suggestion Algorithm
 
 ```
 for each overloaded developer:
-    find their lowest-priority non-done tasks
+    take their non-done tasks, lowest priority first
     for each candidate task:
         find a developer WHERE:
             not overloaded
@@ -412,6 +507,7 @@ for each overloaded developer:
         if found:
             suggest: move task from A → B
             show projected utilisation for both
+            stop: at most one suggestion per overloaded developer
 ```
 
 ---
