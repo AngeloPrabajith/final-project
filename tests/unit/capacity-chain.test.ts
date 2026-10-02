@@ -22,7 +22,7 @@ import type { CapacityAnalysis } from "@/types";
  * end-to-end chain including the inline clamp and rounding is asserted against
  * the seeded database in tests/integration/capacity-records.int.test.ts.
  */
-describe("capacity chain — handbook worked example (Angelo in Sprint 1)", () => {
+describe("capacity chain: handbook worked example (Angelo in Sprint 1)", () => {
   const weekly = 40;
   const meetings = 12;
   const sprintWeeks = 2;
@@ -48,7 +48,7 @@ describe("capacity chain — handbook worked example (Angelo in Sprint 1)", () =
     expect(detectOverload(36, 22.4)).toBe(true);
   });
 
-  // Handbook §3: the thesis case — a naive hours-vs-nominal view (36h of an
+  // Handbook §3: the thesis case, where a naive hours-vs-nominal view (36h of an
   // 80h fortnight) reads as under half-loaded; only the modelled chain
   // reveals the overload.
   it("reads the same 36 hours as under half-loaded against nominal capacity", () => {
@@ -58,7 +58,7 @@ describe("capacity chain — handbook worked example (Angelo in Sprint 1)", () =
   });
 });
 
-describe("buildCapacityAnalysis — the one chain every capacity path uses", () => {
+describe("buildCapacityAnalysis: the one chain every capacity path uses", () => {
   const halfShared = {
     concurrentSprintCount: 1,
     allocationFactor: 0.5,
@@ -101,7 +101,7 @@ describe("buildCapacityAnalysis — the one chain every capacity path uses", () 
   });
 });
 
-describe("capacity chain — edges", () => {
+describe("capacity chain: edges", () => {
   it("keeps the full capacity when the buffer is 0", () => {
     const effective = calculateCapacity(30, 2) * (1 - 0) * 1;
     expect(effective).toBe(60);
@@ -132,7 +132,7 @@ describe("capacity chain — edges", () => {
   });
 });
 
-describe("ad-hoc simulation — pure before/after arithmetic", () => {
+describe("ad-hoc simulation: pure before/after arithmetic", () => {
   const before: CapacityAnalysis = {
     developerId: "d1",
     developerName: "Nomal Ariyarathna",

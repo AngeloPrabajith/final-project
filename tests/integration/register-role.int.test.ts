@@ -17,7 +17,7 @@ afterAll(async () => {
   await prisma.user.deleteMany({ where: { email: { endsWith: "@test.local" } } });
 });
 
-describe("registration endpoint — role pinned server-side", () => {
+describe("registration endpoint: role pinned server-side", () => {
   // Handbook §5: self-registration always creates an UNLINKED developer;
   // client and manager accounts are never self-service. The role in the body
   // must be ignored, or any visitor could mint themselves a manager account.

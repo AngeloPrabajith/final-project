@@ -40,7 +40,7 @@ function task(
   } as Task;
 }
 
-describe("rebalancing suggestions — move low-priority work off overloaded developers", () => {
+describe("rebalancing suggestions: move low-priority work off overloaded developers", () => {
   const overloadedDev = analysis("Swamped", 60, 40); // 150%
   const freeDev = analysis("Free", 10, 40); // 25%
 

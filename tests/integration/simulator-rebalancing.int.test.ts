@@ -26,7 +26,7 @@ describe("ad-hoc simulator against the seeded database", () => {
     );
   });
 
-  it("is a pure what-if — no task row is ever created", async () => {
+  it("is a pure what-if: no task row is ever created", async () => {
     const sprintId = await sprintIdByName("Sprint 2 · Email & integrations");
     const analyses = await computeSprintCapacity(sprintId);
     const before = await prisma.task.count();
@@ -37,7 +37,7 @@ describe("ad-hoc simulator against the seeded database", () => {
 
   it("judges a developer not yet on the sprint against the full capacity chain", async () => {
     // Abdulaziz: 25h/wk, 8h meetings, no Sprint 1 tasks, but assigned in the
-    // concurrent Sprint 2 — so taking ad-hoc work here makes him one of two:
+    // concurrent Sprint 2, so taking ad-hoc work here makes him one of two:
     //   (25 − 8) × 2wk = 34h × 0.8 buffer = 27.2h × 0.5 multi-project = 13.6h
     const sprintId = await sprintIdByName("Sprint 1 · PDP experience");
     const dev = await prisma.developer.findFirstOrThrow({

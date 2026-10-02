@@ -114,7 +114,7 @@ Command: `npm run check:authz`, run against the dev server and the freshly seede
 > bash scripts/authz-check.sh
 
 
-Cadence — role-based access control checks
+Cadence: role-based access control checks
 Base: http://localhost:3000
 
 1. Unauthenticated requests are refused
@@ -197,38 +197,38 @@ Source: `docs/test-report.md`, generated 2026-10-02. The per-test durations (ms)
 
 | Test | Result | ms |
 |---|---|---:|
-| capacity chain — handbook worked example (Angelo in Sprint 1) › reproduces 40h/wk − 12h meetings × 2 weeks = 56h nominal capacity | pass | 1 |
-| capacity chain — handbook worked example (Angelo in Sprint 1) › reduces 56h to 22.4h effective through buffer ×0.8 and multi-project ×0.5 | pass | 0 |
-| capacity chain — handbook worked example (Angelo in Sprint 1) › flags 36 assigned hours against 22.4h effective as 161% utilisation and overloaded | pass | 0 |
-| capacity chain — handbook worked example (Angelo in Sprint 1) › reads the same 36 hours as under half-loaded against nominal capacity | pass | 0 |
-| buildCapacityAnalysis — the one chain every capacity path uses › reproduces the worked example end to end: 56h → 22.4h effective, 161%, overloaded | pass | 1 |
-| buildCapacityAnalysis — the one chain every capacity path uses › clamps net capacity to zero when meetings exceed weekly hours | pass | 0 |
-| capacity chain — edges › keeps the full capacity when the buffer is 0 | pass | 0 |
-| capacity chain — edges › keeps 60% of capacity at the maximum 0.4 buffer | pass | 0 |
-| capacity chain — edges › reports 100% utilisation, not a division error, when effective capacity is zero but work is assigned | pass | 0 |
-| capacity chain — edges › does not flag a developer sitting exactly at effective capacity | pass | 0 |
-| capacity chain — edges › sums assigned hours across a task list | pass | 0 |
-| ad-hoc simulation — pure before/after arithmetic › adds the hypothetical hours to assigned work and recomputes utilisation | pass | 0 |
-| ad-hoc simulation — pure before/after arithmetic › reports wouldCauseOverload only when the addition crosses the line | pass | 0 |
-| ad-hoc simulation — pure before/after arithmetic › leaves the before snapshot untouched | pass | 0 |
+| capacity chain: handbook worked example (Angelo in Sprint 1) › reproduces 40h/wk − 12h meetings × 2 weeks = 56h nominal capacity | pass | 1 |
+| capacity chain: handbook worked example (Angelo in Sprint 1) › reduces 56h to 22.4h effective through buffer ×0.8 and multi-project ×0.5 | pass | 0 |
+| capacity chain: handbook worked example (Angelo in Sprint 1) › flags 36 assigned hours against 22.4h effective as 161% utilisation and overloaded | pass | 0 |
+| capacity chain: handbook worked example (Angelo in Sprint 1) › reads the same 36 hours as under half-loaded against nominal capacity | pass | 0 |
+| buildCapacityAnalysis: the one chain every capacity path uses › reproduces the worked example end to end: 56h → 22.4h effective, 161%, overloaded | pass | 1 |
+| buildCapacityAnalysis: the one chain every capacity path uses › clamps net capacity to zero when meetings exceed weekly hours | pass | 0 |
+| capacity chain: edges › keeps the full capacity when the buffer is 0 | pass | 0 |
+| capacity chain: edges › keeps 60% of capacity at the maximum 0.4 buffer | pass | 0 |
+| capacity chain: edges › reports 100% utilisation, not a division error, when effective capacity is zero but work is assigned | pass | 0 |
+| capacity chain: edges › does not flag a developer sitting exactly at effective capacity | pass | 0 |
+| capacity chain: edges › sums assigned hours across a task list | pass | 0 |
+| ad-hoc simulation: pure before/after arithmetic › adds the hypothetical hours to assigned work and recomputes utilisation | pass | 0 |
+| ad-hoc simulation: pure before/after arithmetic › reports wouldCauseOverload only when the addition crosses the line | pass | 0 |
+| ad-hoc simulation: pure before/after arithmetic › leaves the before snapshot untouched | pass | 0 |
 
 ### tests/unit/estimation-accuracy.test.ts ✅
 
 | Test | Result | ms |
 |---|---|---:|
-| estimation-accuracy factor — pseudo-count shrinkage toward 1.0 › lands near 1.0 for a single task overshot by 50% (n=1, k=9) | pass | 2 |
-| estimation-accuracy factor — pseudo-count shrinkage toward 1.0 › equals the raw Σactual/Σestimated ratio once n reaches 10 (k=0) | pass | 0 |
-| estimation-accuracy factor — pseudo-count shrinkage toward 1.0 › returns a neutral 1.0 factor with no samples at all | pass | 0 |
+| estimation-accuracy factor: pseudo-count shrinkage toward 1.0 › lands near 1.0 for a single task overshot by 50% (n=1, k=9) | pass | 2 |
+| estimation-accuracy factor: pseudo-count shrinkage toward 1.0 › equals the raw Σactual/Σestimated ratio once n reaches 10 (k=0) | pass | 0 |
+| estimation-accuracy factor: pseudo-count shrinkage toward 1.0 › returns a neutral 1.0 factor with no samples at all | pass | 0 |
 | confidence bands at n<5 and n<15 › classifies n=4 as low confidence | pass | 0 |
 | confidence bands at n<5 and n<15 › classifies n=5 as medium confidence | pass | 0 |
 | confidence bands at n<5 and n<15 › classifies n=14 as medium confidence | pass | 0 |
 | confidence bands at n<5 and n<15 › classifies n=15 as high confidence | pass | 0 |
-| trend detection — halves compared by distance from 1.0, 0.05 movement rule › reports no trend below eight samples | pass | 0 |
-| trend detection — halves compared by distance from 1.0, 0.05 movement rule › labels a developer improving when the later half sits closer to 1.0 | pass | 0 |
-| trend detection — halves compared by distance from 1.0, 0.05 movement rule › labels a developer degrading when the later half drifts away from 1.0 | pass | 0 |
-| trend detection — halves compared by distance from 1.0, 0.05 movement rule › labels movement within ±0.05 as stable | pass | 0 |
-| sampling window — rolling 90 days, asOf-anchored (no leakage) › queries completions from exactly 90 days before the anchor up to the anchor | pass | 0 |
-| sampling window — rolling 90 days, asOf-anchored (no leakage) › excludes completions at or after asOf via a strict less-than bound | pass | 0 |
+| trend detection: halves compared by distance from 1.0, 0.05 movement rule › reports no trend below eight samples | pass | 0 |
+| trend detection: halves compared by distance from 1.0, 0.05 movement rule › labels a developer improving when the later half sits closer to 1.0 | pass | 0 |
+| trend detection: halves compared by distance from 1.0, 0.05 movement rule › labels a developer degrading when the later half drifts away from 1.0 | pass | 0 |
+| trend detection: halves compared by distance from 1.0, 0.05 movement rule › labels movement within ±0.05 as stable | pass | 1 |
+| sampling window: rolling 90 days, asOf-anchored (no leakage) › queries completions from exactly 90 days before the anchor up to the anchor | pass | 1 |
+| sampling window: rolling 90 days, asOf-anchored (no leakage) › excludes completions at or after asOf via a strict less-than bound | pass | 0 |
 | applying the factor to capacity › divides effective capacity by the factor (an under-estimator has less usable capacity) | pass | 0 |
 | applying the factor to capacity › returns capacity unchanged for a zero, negative or missing factor (never breaks the base engine) | pass | 0 |
 
@@ -236,9 +236,9 @@ Source: `docs/test-report.md`, generated 2026-10-02. The per-test durations (ms)
 
 | Test | Result | ms |
 |---|---|---:|
-| exponential squish — probability = 100 × (1 − e^(−raw/40)) › maps zero raw points to exactly 0% probability | pass | 1 |
-| exponential squish — probability = 100 × (1 − e^(−raw/40)) › maps 48 raw points to 70% (the live Sprint 1 figure) | pass | 0 |
-| exponential squish — probability = 100 × (1 − e^(−raw/40)) › maps 40 raw points to 63% and saturates gracefully at high raw scores | pass | 0 |
+| exponential squish: probability = 100 × (1 − e^(−raw/40)) › maps zero raw points to exactly 0% probability | pass | 1 |
+| exponential squish: probability = 100 × (1 − e^(−raw/40)) › maps 48 raw points to 70% (the live Sprint 1 figure) | pass | 0 |
+| exponential squish: probability = 100 × (1 − e^(−raw/40)) › maps 40 raw points to 63% and saturates gracefully at high raw scores | pass | 0 |
 | risk bands at 25 / 50 / 75 › classifies 0 percent as low | pass | 0 |
 | risk bands at 25 / 50 / 75 › classifies 24 percent as low | pass | 0 |
 | risk bands at 25 / 50 / 75 › classifies 25 percent as moderate | pass | 0 |
@@ -247,41 +247,41 @@ Source: `docs/test-report.md`, generated 2026-10-02. The per-test durations (ms)
 | risk bands at 25 / 50 / 75 › classifies 74 percent as high | pass | 0 |
 | risk bands at 25 / 50 / 75 › classifies 75 percent as critical | pass | 0 |
 | risk bands at 25 / 50 / 75 › classifies 100 percent as critical | pass | 0 |
-| signal 1: team utilisation (max 40) — factor-adjusted peak › awards zero points when every developer sits below 80% | pass | 0 |
-| signal 1: team utilisation (max 40) — factor-adjusted peak › caps at 40 points at 120% utilisation and beyond | pass | 0 |
-| signal 1: team utilisation (max 40) — factor-adjusted peak › scores the PEAK developer, not the average | pass | 0 |
-| signal 1: team utilisation (max 40) — factor-adjusted peak › returns zero with no developers assigned | pass | 0 |
-| signal 5: estimation accuracy (max 10) — asymmetric penalty › caps at 10 points for a heavily under-estimating team | pass | 0 |
-| signal 5: estimation accuracy (max 10) — asymmetric penalty › penalises over-estimators far more gently, capped at 4 | pass | 0 |
-| signal 5: estimation accuracy (max 10) — asymmetric penalty › awards zero for a perfectly calibrated team | pass | 0 |
-| signal 5: estimation accuracy (max 10) — asymmetric penalty › weights the team factor by assigned hours | pass | 0 |
-| signal 4: days remaining (max 15) — remaining work vs time left › caps at 15 when the gap exceeds 30% of the sprint length | pass | 0 |
-| signal 4: days remaining (max 15) — remaining work vs time left › awards zero when the remaining work fits the remaining days | pass | 0 |
-| signal 4: days remaining (max 15) — remaining work vs time left › ignores completed tasks in the remaining-hours total | pass | 0 |
-| signal 4: days remaining (max 15) — remaining work vs time left › scores zero before the sprint starts and after it ends | pass | 0 |
-| signal 3: velocity trend (max 15) — stepwise on past completion rate › caps at 15 when the historic completion rate falls below 70% | pass | 0 |
-| signal 3: velocity trend (max 15) — stepwise on past completion rate › awards zero for a ≥95% completion history | pass | 0 |
-| signal 3: velocity trend (max 15) — stepwise on past completion rate › awards zero with no historic sprints on the project | pass | 0 |
-| signal 3: velocity trend (max 15) — stepwise on past completion rate › only looks at sprints that ended before the asOf anchor | pass | 0 |
-| signal 2: ad-hoc history (max 20) — stepwise on unplanned fraction › caps at 20 when ad-hoc work reaches 30% of recent sprint hours | pass | 0 |
-| signal 2: ad-hoc history (max 20) — stepwise on unplanned fraction › awards zero when unplanned work stays under 5% | pass | 0 |
-| signal 2: ad-hoc history (max 20) — stepwise on unplanned fraction › awards zero with no historic data | pass | 0 |
+| signal 1: team utilisation (max 40), factor-adjusted peak › awards zero points when every developer sits below 80% | pass | 0 |
+| signal 1: team utilisation (max 40), factor-adjusted peak › caps at 40 points at 120% utilisation and beyond | pass | 0 |
+| signal 1: team utilisation (max 40), factor-adjusted peak › scores the PEAK developer, not the average | pass | 0 |
+| signal 1: team utilisation (max 40), factor-adjusted peak › returns zero with no developers assigned | pass | 0 |
+| signal 5: estimation accuracy (max 10), asymmetric penalty › caps at 10 points for a heavily under-estimating team | pass | 0 |
+| signal 5: estimation accuracy (max 10), asymmetric penalty › penalises over-estimators far more gently, capped at 4 | pass | 0 |
+| signal 5: estimation accuracy (max 10), asymmetric penalty › awards zero for a perfectly calibrated team | pass | 0 |
+| signal 5: estimation accuracy (max 10), asymmetric penalty › weights the team factor by assigned hours | pass | 0 |
+| signal 4: days remaining (max 15), remaining work vs time left › caps at 15 when the gap exceeds 30% of the sprint length | pass | 0 |
+| signal 4: days remaining (max 15), remaining work vs time left › awards zero when the remaining work fits the remaining days | pass | 0 |
+| signal 4: days remaining (max 15), remaining work vs time left › ignores completed tasks in the remaining-hours total | pass | 0 |
+| signal 4: days remaining (max 15), remaining work vs time left › scores zero before the sprint starts and after it ends | pass | 0 |
+| signal 3: velocity trend (max 15), stepwise on past completion rate › caps at 15 when the historic completion rate falls below 70% | pass | 0 |
+| signal 3: velocity trend (max 15), stepwise on past completion rate › awards zero for a ≥95% completion history | pass | 0 |
+| signal 3: velocity trend (max 15), stepwise on past completion rate › awards zero with no historic sprints on the project | pass | 0 |
+| signal 3: velocity trend (max 15), stepwise on past completion rate › only looks at sprints that ended before the asOf anchor | pass | 0 |
+| signal 2: ad-hoc history (max 20), stepwise on unplanned fraction › caps at 20 when ad-hoc work reaches 30% of recent sprint hours | pass | 0 |
+| signal 2: ad-hoc history (max 20), stepwise on unplanned fraction › awards zero when unplanned work stays under 5% | pass | 0 |
+| signal 2: ad-hoc history (max 20), stepwise on unplanned fraction › awards zero with no historic data | pass | 0 |
 
 ### tests/unit/redact.test.ts ✅
 
 | Test | Result | ms |
 |---|---|---:|
-| whitelist redaction — client shapes are BUILT, never stripped › produces exactly the CLIENT_TASK_KEYS set for a client task | pass | 1 |
-| whitelist redaction — client shapes are BUILT, never stripped › produces exactly the CLIENT_SPRINT_KEYS set for a client sprint | pass | 0 |
-| whitelist redaction — client shapes are BUILT, never stripped › produces exactly the CLIENT_PROJECT_KEYS set for a client project | pass | 0 |
-| whitelist redaction — client shapes are BUILT, never stripped › drops the assignee, actual hours, completion timestamp and description from tasks | pass | 0 |
-| whitelist redaction — client shapes are BUILT, never stripped › drops retrospectiveNotes and capacityBuffer from sprints | pass | 0 |
-| whitelist redaction — client shapes are BUILT, never stripped › redacts the nested sprint and task arrays recursively through a project | pass | 0 |
-| whitelist redaction — client shapes are BUILT, never stripped › never emits a developer name, utilisation figure or recommendation string anywhere in a client shape | pass | 0 |
-| delivery confidence — band only, never the probability › labels the low band as On track | pass | 0 |
-| delivery confidence — band only, never the probability › labels the moderate band as On track - minor risk | pass | 0 |
-| delivery confidence — band only, never the probability › labels the high band as Delivery at risk | pass | 0 |
-| delivery confidence — band only, never the probability › labels the critical band as Delivery at significant risk | pass | 0 |
+| whitelist redaction: client shapes are BUILT, never stripped › produces exactly the CLIENT_TASK_KEYS set for a client task | pass | 2 |
+| whitelist redaction: client shapes are BUILT, never stripped › produces exactly the CLIENT_SPRINT_KEYS set for a client sprint | pass | 0 |
+| whitelist redaction: client shapes are BUILT, never stripped › produces exactly the CLIENT_PROJECT_KEYS set for a client project | pass | 0 |
+| whitelist redaction: client shapes are BUILT, never stripped › drops the assignee, actual hours, completion timestamp and description from tasks | pass | 0 |
+| whitelist redaction: client shapes are BUILT, never stripped › drops retrospectiveNotes and capacityBuffer from sprints | pass | 0 |
+| whitelist redaction: client shapes are BUILT, never stripped › redacts the nested sprint and task arrays recursively through a project | pass | 0 |
+| whitelist redaction: client shapes are BUILT, never stripped › never emits a developer name, utilisation figure or recommendation string anywhere in a client shape | pass | 0 |
+| delivery confidence: band only, never the probability › labels the low band as On track | pass | 0 |
+| delivery confidence: band only, never the probability › labels the moderate band as On track - minor risk | pass | 0 |
+| delivery confidence: band only, never the probability › labels the high band as Delivery at risk | pass | 0 |
+| delivery confidence: band only, never the probability › labels the critical band as Delivery at significant risk | pass | 0 |
 | developer task-update field allow-list › permits exactly status, actualHours and completedAt | pass | 0 |
 | developer task-update field allow-list › rejects an attempt to reassign a task to a peer | pass | 0 |
 | developer task-update field allow-list › rejects estimate tampering and any unknown field | pass | 0 |
@@ -292,12 +292,12 @@ Source: `docs/test-report.md`, generated 2026-10-02. The per-test durations (ms)
 
 | Test | Result | ms |
 |---|---|---:|
-| capacity engine against the seeded database › reproduces the handbook worked example end to end: Angelo at 22.4h effective and 161% in Sprint 1 | pass | 258 |
-| capacity engine against the seeded database › includes paused tasks in assigned hours — pausing does not release capacity | pass | 19 |
-| capacity engine against the seeded database › excludes done tasks from assigned hours — a fully completed sprint shows zero active load | pass | 17 |
-| capacity engine against the seeded database › upserts exactly one CapacityRecord per (developer, sprint) and stays idempotent across recomputes | pass | 21 |
-| retroactive forecasting never rewrites history (handbook §4 leakage rules) › computes an asOf-anchored forecast without writing a single CapacityRecord | pass | 38 |
-| retroactive forecasting never rewrites history (handbook §4 leakage rules) › treats tasks completed after asOf as still pending — nothing is 'done' at sprint start | pass | 31 |
+| capacity engine against the seeded database › reproduces the handbook worked example end to end: Angelo at 22.4h effective and 161% in Sprint 1 | pass | 135 |
+| capacity engine against the seeded database › includes paused tasks in assigned hours: pausing does not release capacity | pass | 20 |
+| capacity engine against the seeded database › excludes done tasks from assigned hours: a fully completed sprint shows zero active load | pass | 20 |
+| capacity engine against the seeded database › upserts exactly one CapacityRecord per (developer, sprint) and stays idempotent across recomputes | pass | 28 |
+| retroactive forecasting never rewrites history (handbook §4 leakage rules) › computes an asOf-anchored forecast without writing a single CapacityRecord | pass | 30 |
+| retroactive forecasting never rewrites history (handbook §4 leakage rules) › treats tasks completed after asOf as still pending: nothing is 'done' at sprint start | pass | 33 |
 | retroactive forecasting never rewrites history (handbook §4 leakage rules) › computes burndown for the client path with zero database writes | pass | 2 |
 | meeting-hours clamp on a scratch fixture › clamps net capacity to zero when meeting hours exceed weekly hours, and still reports meaningfully | pass | 3 |
 
@@ -305,26 +305,26 @@ Source: `docs/test-report.md`, generated 2026-10-02. The per-test durations (ms)
 
 | Test | Result | ms |
 |---|---|---:|
-| retroactive forecast evaluation on the four seeded historic sprints › classifies the four historic sprints as low/met, moderate/met, high/partial and high/missed | pass | 175 |
-| retroactive forecast evaluation on the four seeded historic sprints › reports 2 correct alarms, 0 false alarms and 0 missed alarms (100% alarm precision) | pass | 41 |
-| retroactive forecast evaluation on the four seeded historic sprints › orders evaluations chronologically and names a top contributor for each | pass | 39 |
+| retroactive forecast evaluation on the four seeded historic sprints › classifies the four historic sprints as low/met, moderate/met, high/partial and high/missed | pass | 172 |
+| retroactive forecast evaluation on the four seeded historic sprints › reports 2 correct alarms, 0 false alarms and 0 missed alarms (100% alarm precision) | pass | 40 |
+| retroactive forecast evaluation on the four seeded historic sprints › orders evaluations chronologically and names a top contributor for each | pass | 35 |
 
 ### tests/integration/register-role.int.test.ts ✅
 
 | Test | Result | ms |
 |---|---|---:|
-| registration endpoint — role pinned server-side › creates a developer even when the request body claims to be a manager | pass | 179 |
-| registration endpoint — role pinned server-side › leaves the new account unlinked to any developer profile (fail-closed until a manager links it) | pass | 7 |
-| registration endpoint — role pinned server-side › rejects a duplicate email with 409 | pass | 2 |
-| registration endpoint — role pinned server-side › rejects a submission missing required fields with 400 | pass | 0 |
+| registration endpoint: role pinned server-side › creates a developer even when the request body claims to be a manager | pass | 177 |
+| registration endpoint: role pinned server-side › leaves the new account unlinked to any developer profile (fail-closed until a manager links it) | pass | 6 |
+| registration endpoint: role pinned server-side › rejects a duplicate email with 409 | pass | 2 |
+| registration endpoint: role pinned server-side › rejects a submission missing required fields with 400 | pass | 0 |
 
 ### tests/integration/simulator-rebalancing.int.test.ts ✅
 
 | Test | Result | ms |
 |---|---|---:|
-| ad-hoc simulator against the seeded database › adds hypothetical hours to the developer's live analysis and reconciles with the chain | pass | 131 |
-| ad-hoc simulator against the seeded database › is a pure what-if — no task row is ever created | pass | 31 |
-| ad-hoc simulator against the seeded database › judges a developer not yet on the sprint against the full capacity chain | pass | 27 |
+| ad-hoc simulator against the seeded database › adds hypothetical hours to the developer's live analysis and reconciles with the chain | pass | 147 |
+| ad-hoc simulator against the seeded database › is a pure what-if: no task row is ever created | pass | 33 |
+| ad-hoc simulator against the seeded database › judges a developer not yet on the sprint against the full capacity chain | pass | 24 |
 | rebalancing suggestions against the overloaded seeded sprint › emits at most one suggestion per overloaded developer, each reconciling with the capacity chain | pass | 18 |
 
 ### Remaining test files

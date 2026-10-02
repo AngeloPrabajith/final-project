@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Unit-tested through the public service API with the database mocked — the
+// Unit-tested through the public service API with the database mocked; the
 // shrinkage, confidence and trend logic runs unmodified on crafted samples.
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -27,7 +27,7 @@ beforeEach(() => {
   mockedDev.mockResolvedValue({ id: "dev-1", name: "Test Dev" } as never);
 });
 
-describe("estimation-accuracy factor — pseudo-count shrinkage toward 1.0", () => {
+describe("estimation-accuracy factor: pseudo-count shrinkage toward 1.0", () => {
   // Handbook §4 / predictive-layer.md design decision 1: one overshot task
   // must not savage a new hire's modelled capacity.
   it("lands near 1.0 for a single task overshot by 50% (n=1, k=9)", async () => {
@@ -73,7 +73,7 @@ describe("confidence bands at n<5 and n<15", () => {
   });
 });
 
-describe("trend detection — halves compared by distance from 1.0, 0.05 movement rule", () => {
+describe("trend detection: halves compared by distance from 1.0, 0.05 movement rule", () => {
   it("reports no trend below eight samples", async () => {
     mockedTasks.mockResolvedValue(
       Array.from({ length: 7 }, (_, i) => sample(10, 13, `2026-07-0${i + 1}`)) as never
@@ -107,7 +107,7 @@ describe("trend detection — halves compared by distance from 1.0, 0.05 movemen
   });
 });
 
-describe("sampling window — rolling 90 days, asOf-anchored (no leakage)", () => {
+describe("sampling window: rolling 90 days, asOf-anchored (no leakage)", () => {
   it("queries completions from exactly 90 days before the anchor up to the anchor", async () => {
     mockedTasks.mockResolvedValue([] as never);
     const asOf = new Date("2026-05-01T00:00:00Z");
@@ -123,7 +123,7 @@ describe("sampling window — rolling 90 days, asOf-anchored (no leakage)", () =
   });
 
   // Handbook §4: the retroactive evaluation depends on `asOf` excluding every
-  // completion at or after the anchor — enforced here at the query boundary.
+  // completion at or after the anchor, enforced here at the query boundary.
   it("excludes completions at or after asOf via a strict less-than bound", async () => {
     mockedTasks.mockResolvedValue([] as never);
     const asOf = new Date("2026-05-01T00:00:00Z");

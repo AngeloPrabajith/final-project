@@ -4,7 +4,7 @@ import {
   computeContextSwitchFactor,
 } from "@/services/multi-project-capacity.service";
 
-describe("allocation factor — 1/(N+1) equal split across concurrent sprints", () => {
+describe("allocation factor: 1/(N+1) equal split across concurrent sprints", () => {
   it("gives full capacity to a developer on a single sprint (N=0)", () => {
     expect(computeAllocationFactor(0)).toBe(1);
   });
@@ -33,12 +33,12 @@ describe("allocation factor — 1/(N+1) equal split across concurrent sprints", 
   });
 });
 
-describe("context-switch factor — 20% loss per context past the first extra", () => {
+describe("context-switch factor: 20% loss per context past the first extra", () => {
   it("applies no penalty for a single sprint (N=0)", () => {
     expect(computeContextSwitchFactor(0)).toBe(1);
   });
 
-  // Handbook §3: two concurrent sprints incur no penalty — one extra context
+  // Handbook §3: two concurrent sprints incur no penalty; one extra context
   // is the baseline (Cohn 2005; Sutherland; Weinberg).
   it("applies no penalty for exactly two concurrent sprints (N=1)", () => {
     expect(computeContextSwitchFactor(1)).toBe(1);

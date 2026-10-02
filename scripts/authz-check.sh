@@ -3,7 +3,7 @@
 # Role-based access control verification.
 #
 # Exercises every API endpoint as a manager, a developer and a client, asserts
-# the expected HTTP status, and — the part that matters most — scans every
+# the expected HTTP status, and (the part that matters most) scans every
 # client-facing response body for per-developer data that should never reach an
 # external stakeholder.
 #
@@ -14,7 +14,7 @@
 #
 # Usage:
 #   npm run dev            # in another terminal
-#   npm run db:seed        # required — this asserts against seeded personas
+#   npm run db:seed        # required: this asserts against seeded personas
 #   ./scripts/authz-check.sh
 #
 # Exits non-zero if any check fails, so it can gate CI.
@@ -95,7 +95,7 @@ expect_no_leak() {
 }
 
 echo
-echo "Cadence — role-based access control checks"
+echo "Cadence: role-based access control checks"
 echo "Base: $BASE"
 
 MGR=$(login admin@sprintplanner.com)
@@ -199,7 +199,7 @@ echo "────────────────────────�
 printf "  %s passed, %s failed\n" "$(green "$PASS")" "$([ "$FAIL" -eq 0 ] && green 0 || red "$FAIL")"
 echo
 
-# Leave the seed data as we found it — one check above flips a task status.
+# Leave the seed data as we found it: one check above flips a task status.
 if [ "$FAIL" -eq 0 ]; then
   echo "$(dim 'Note: run `npm run db:seed` to reset the task status this script changed.')"
   exit 0

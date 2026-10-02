@@ -6,7 +6,7 @@ import {
   TASK_STATUSES,
 } from "@/lib/task-statuses";
 
-describe("task workflow — single source of truth for the eight states", () => {
+describe("task workflow: single source of truth for the eight states", () => {
   it("defines exactly eight statuses in Kanban column order", () => {
     expect(TASK_STATUSES.map((s) => s.id)).toEqual([
       "backlog",
@@ -20,7 +20,7 @@ describe("task workflow — single source of truth for the eight states", () => 
     ]);
   });
 
-  // Handbook §2: only `done` releases capacity — a paused task is still
+  // Handbook §2: only `done` releases capacity; a paused task is still
   // assigned to the developer and still consumes their capacity.
   it("treats only done as terminal for capacity and estimation-accuracy purposes", () => {
     expect(isTerminalStatus("done")).toBe(true);

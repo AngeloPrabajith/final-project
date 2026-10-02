@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { landingPathFor, normaliseRole, ROLES } from "@/lib/roles";
 
-describe("role normalisation — plain string + aliases instead of a DB enum", () => {
+describe("role normalisation: plain string + aliases instead of a DB enum", () => {
   // Handbook §10.8: legacy rows and 8h JWTs minted before the role model said
   // "admin" / "user"; both denoted full access, so both alias to manager.
   it("maps the legacy admin role to manager", () => {
@@ -27,7 +27,7 @@ describe("role normalisation — plain string + aliases instead of a DB enum", (
     expect(normaliseRole("CLIENT")).toBe("client");
   });
 
-  // Handbook §5: a typo or tampered token must fail CLOSED — the unknown
+  // Handbook §5: a typo or tampered token must fail CLOSED; the unknown
   // value collapses to the least-privileged role, never to manager.
   it("fails closed: unknown, empty, null and undefined all collapse to client", () => {
     expect(normaliseRole("superadmin")).toBe("client");

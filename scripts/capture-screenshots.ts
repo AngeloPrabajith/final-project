@@ -2,7 +2,7 @@
  * Automated screenshot capture for the dissertation figures.
  *
  * Run via `npm run screenshots` (which reseeds the DEMO database first so the
- * engineered numbers — Angelo at 161%, Sprint 1 forecast ~70% high — are live).
+ * engineered numbers (Angelo at 161%, Sprint 1 forecast ~70% high) are live).
  * Starts the dev server itself if nothing is listening on :3000.
  *
  * Output: docs/screenshots/NN-name.png (1440×900 viewport, light theme) plus a
@@ -40,7 +40,7 @@ interface ManifestRow {
 const manifest: ManifestRow[] = [];
 
 // ---------------------------------------------------------------------------
-// Dev server management — start it only if nothing is listening.
+// Dev server management: start it only if nothing is listening.
 // ---------------------------------------------------------------------------
 async function serverUp(): Promise<boolean> {
   try {
@@ -158,7 +158,7 @@ async function main() {
 
   try {
     // ------------------------------------------------------------------ logged out
-    console.log("— logged out —");
+    console.log("--- logged out ---");
     const anon = await openContext(browser);
     const anonPage = await anon.newPage();
 
@@ -182,12 +182,12 @@ async function main() {
       route: "/register",
       shows: "Registration form (name, email, password)",
       caption:
-        "Figure: self-registration. The server pins every new account to the developer role and leaves it unlinked until a manager grants access — fail-closed by design.",
+        "Figure: self-registration. The server pins every new account to the developer role and leaves it unlinked until a manager grants access: fail-closed by design.",
     });
     await anon.close();
 
     // ------------------------------------------------------------------ manager
-    console.log("— manager (admin@sprintplanner.com) —");
+    console.log("--- manager (admin@sprintplanner.com) ---");
     const mgr = await openContext(browser);
     const m = await mgr.newPage();
     await login(m, "admin@sprintplanner.com", "/dashboard");
@@ -240,7 +240,7 @@ async function main() {
       role: "manager",
       route: "/sprints/[id] (Sprint 1)",
       shows: "Top of the sprint page: project/date badges, health badge with recommendation tooltip, burndown and forecast entering the fold",
-      caption: `Figure: the ${SPRINT_1} detail page — the engineered overloaded sprint.`,
+      caption: `Figure: the ${SPRINT_1} detail page, the engineered overloaded sprint.`,
       mode: "viewport",
     });
 
@@ -254,7 +254,7 @@ async function main() {
     });
 
     // NOTE: overloaded capacity cards receive a bg-red override, and the Card's
-    // cn()/tailwind-merge drops the conflicting `bg-card` class — so Angelo's
+    // cn()/tailwind-merge drops the conflicting `bg-card` class, so Angelo's
     // card cannot be found via div.bg-card. Target the cards grid directly.
     await m.getByText("Shared with 1 other sprint").first().waitFor();
     await shotElement(
@@ -266,7 +266,7 @@ async function main() {
         route: "/sprints/[id] (Sprint 1)",
         shows: "Per-developer capacity cards. Angelo: ×1.28 factor badge, 36h active / 22.4h effective (161%), adj. 17.5h (206%), 12h/wk meetings, 'Shared with 1 other sprint · ×0.50 multi-project' naming Sprint 3",
         caption:
-          "Figure: per-developer capacity cards showing the full multiplier chain — meetings, buffer, and the cross-sprint allocation factor compose into 22.4h effective capacity.",
+          "Figure: per-developer capacity cards showing the full multiplier chain: meetings, buffer, and the cross-sprint allocation factor compose into 22.4h effective capacity.",
         note: "The breakdown lines are always visible on these cards; nothing needed expanding.",
       }
     );
@@ -278,7 +278,7 @@ async function main() {
       route: "/sprints/[id] (Sprint 1)",
       shows: "Rebalancing panel: 'Mini cart UX improvements' (6h, medium) from Angelo to Kusalni, with projected utilisation for both (Angelo 134%, Kusalni 99%) and one-click Apply",
       caption:
-        "Figure: automated rebalancing suggestion — the lowest-priority task that fits a teammate's remaining headroom is proposed for reassignment, with projected post-move utilisation for both developers.",
+        "Figure: automated rebalancing suggestion: the lowest-priority task that fits a teammate's remaining headroom is proposed for reassignment, with projected post-move utilisation for both developers.",
     });
 
     await shotElement(card(m, "Sprint Progress"), m, {
@@ -318,7 +318,7 @@ async function main() {
       shows: "Kanban board with all eight workflow columns (Backlog → Released to Prod) and drag-and-drop task cards",
       caption:
         "Figure: the eight-state Kanban board. Only 'Released to Prod' is terminal for capacity purposes; a paused task still consumes capacity.",
-      note: "Captured at a temporarily widened viewport (2600px) so all eight columns are visible — the board scrolls horizontally at the standard 1440px.",
+      note: "Captured at a temporarily widened viewport (2600px) so all eight columns are visible; the board scrolls horizontally at the standard 1440px.",
     });
     await m.setViewportSize(VIEWPORT);
 
@@ -340,7 +340,7 @@ async function main() {
       route: "/sprints/[id] (Sprint 1)",
       shows: "The actual-hours dialog raised on any transition to Done: pre-filled with the estimate, Skip and Record hours actions",
       caption:
-        "Figure: the actual-hours prompt — the data-collection point that feeds the per-developer estimation-accuracy factor. Skippable so it never blocks the workflow.",
+        "Figure: the actual-hours prompt, the data-collection point that feeds the per-developer estimation-accuracy factor. Skippable so it never blocks the workflow.",
       note: "Dismissed with Escape (the dialog's cancel path) after capture, so the task's status was not changed.",
     });
     await m.keyboard.press("Escape");
@@ -363,7 +363,7 @@ async function main() {
       route: "/sprints/[id] (Sprint 0, Aurora Living E-Commerce)",
       shows: "Retrospective notes with the seeded free text, auto-save indicator",
       caption:
-        "Figure: sprint retrospective notes (1s-debounce autosave). Manager-authored free text that names individuals — the reason this field is stripped wholesale from client responses.",
+        "Figure: sprint retrospective notes (1s-debounce autosave). Manager-authored free text that names individuals, the reason this field is stripped wholesale from client responses.",
       note: "Discrepancy vs. brief: seeded retrospective text exists only on completed sprints, so this shows Sprint 0 · Performance hardening (an Aurora Living E-Commerce sprint), not Sprint 1.",
     });
 
@@ -389,7 +389,7 @@ async function main() {
       route: "/capacity (Sprint 1 selected)",
       shows: "Ad-hoc simulator in its empty state: developer picker, hours input, Simulate button",
       caption:
-        "Figure: the ad-hoc what-if simulator before input — testing unplanned work against capacity without creating a task.",
+        "Figure: the ad-hoc what-if simulator before input, for testing unplanned work against capacity without creating a task.",
     });
 
     const sim = card(m, "Ad-hoc Task Simulator");
@@ -402,9 +402,9 @@ async function main() {
       file: "17-adhoc-simulator-after.png",
       role: "manager",
       route: "/capacity (Sprint 1 selected)",
-      shows: "Simulator result: Kusalni +20h — before/after assigned hours and utilisation, red overload warning",
+      shows: "Simulator result: Kusalni +20h, before/after assigned hours and utilisation, red overload warning",
       caption:
-        "Figure: the simulator projecting that 20 additional ad-hoc hours would push the developer over effective capacity — overload detected before any commitment is made.",
+        "Figure: the simulator projecting that 20 additional ad-hoc hours would push the developer over effective capacity: overload detected before any commitment is made.",
     });
 
     await shotElement(card(m, "Developer Utilisation Across Sprints"), m, {
@@ -425,7 +425,7 @@ async function main() {
       route: "/developers",
       shows: "Developer table: weekly capacity, meetings/week, and the estimation factor column (×factor, trend arrow, sample size, confidence) for all five personas",
       caption:
-        "Figure: learned estimation-accuracy factors — Angelo ×1.28 (under-estimates, n=15 high confidence), Kusalni ×0.81 (over-estimates), Abdulaziz at n=1 showing Bayesian shrinkage holding the factor near 1.0.",
+        "Figure: learned estimation-accuracy factors: Angelo ×1.28 (under-estimates, n=15 high confidence), Kusalni ×0.81 (over-estimates), Abdulaziz at n=1 showing Bayesian shrinkage holding the factor near 1.0.",
     });
 
     await m.goto("/evaluation");
@@ -438,7 +438,7 @@ async function main() {
       route: "/evaluation",
       shows: "Calibration chart (predicted failure bars vs actual completion line) and the four-sprint table with hit / false-alarm / missed-alarm counters",
       caption:
-        "Figure: retroactive forecast evaluation — each completed sprint re-forecast using only data available at its start. 2 correct alarms, 0 false alarms, 0 missed alarms.",
+        "Figure: retroactive forecast evaluation: each completed sprint re-forecast using only data available at its start. 2 correct alarms, 0 false alarms, 0 missed alarms.",
     });
 
     await m.goto("/admin/users");
@@ -450,12 +450,12 @@ async function main() {
       route: "/admin/users",
       shows: "All accounts with role, linked developer profile, and client project access; the unlinked-account state visible",
       caption:
-        "Figure: Team & Access — where a manager assigns roles, links login accounts to developer profiles, and scopes client access to projects.",
+        "Figure: Team & Access, where a manager assigns roles, links login accounts to developer profiles, and scopes client access to projects.",
     });
     await mgr.close();
 
     // ------------------------------------------------------------------ developer
-    console.log("— developer (angelo@sprintplanner.com) —");
+    console.log("--- developer (angelo@sprintplanner.com) ---");
     const dev = await openContext(browser);
     const d = await dev.newPage();
     await login(d, "angelo@sprintplanner.com", "/my-work");
@@ -468,7 +468,7 @@ async function main() {
       route: "/my-work",
       shows: "Top of My Work: open tasks (8 / 78h), sprints in flight (2), own estimation accuracy, per-sprint load cards with Sprint 1 at 161% overload",
       caption:
-        "Figure: the developer's personal view — the only screen showing one person's total commitment across concurrent sprints. Teammates are absent from the API response, not hidden by the UI.",
+        "Figure: the developer's personal view, the only screen showing one person's total commitment across concurrent sprints. Teammates are absent from the API response, not hidden by the UI.",
       mode: "viewport",
     });
 
@@ -478,7 +478,7 @@ async function main() {
       route: "/my-work",
       shows: "The multiplier-chain breakdown: weekly hours − meetings → × sprint weeks → × buffer → × cross-sprint split, reconciling to 22.4h effective",
       caption:
-        "Figure: 'Why your capacity is split' — every multiplier in the capacity chain shown first-person, with the arithmetic reconciling to the final effective figure.",
+        "Figure: 'Why your capacity is split': every multiplier in the capacity chain shown first-person, with the arithmetic reconciling to the final effective figure.",
     });
 
     const myTasks = d.getByRole("heading", { name: "My tasks" }).locator("xpath=..");
@@ -486,14 +486,14 @@ async function main() {
       file: "24-my-work-tasks.png",
       role: "developer",
       route: "/my-work",
-      shows: "Personal task list across all sprints — Sprint column in place of Assignee, status changes and actual-hours logging enabled, no edit/delete",
+      shows: "Personal task list across all sprints: Sprint column in place of Assignee, status changes and actual-hours logging enabled, no edit/delete",
       caption:
-        "Figure: the developer's task list. The server strips assignee data for this role, so the table shows a Sprint column instead — a leak is impossible by construction.",
+        "Figure: the developer's task list. The server strips assignee data for this role, so the table shows a Sprint column instead; a leak is impossible by construction.",
     });
     await dev.close();
 
     // ------------------------------------------------------------------ client
-    console.log("— client (client-ecom@sprintplanner.com) —");
+    console.log("--- client (client-ecom@sprintplanner.com) ---");
     const cli = await openContext(browser);
     const c = await cli.newPage();
     await login(c, "client-ecom@sprintplanner.com", "/portfolio");
@@ -506,7 +506,7 @@ async function main() {
       route: "/portfolio",
       shows: "Delivery landing: one project card (NOYZ Storefront) with completion percentage and the softened confidence label",
       caption:
-        "Figure: the client's delivery portfolio — completion and a confidence band only. No developer names, utilisation figures, or capacity internals anywhere in the response.",
+        "Figure: the client's delivery portfolio: completion and a confidence band only. No developer names, utilisation figures, or capacity internals anywhere in the response.",
     });
 
     await c.getByText(NOYZ).first().click();
@@ -518,9 +518,9 @@ async function main() {
       file: "26-portfolio-project.png",
       role: "client",
       route: "/portfolio/[projectId]",
-      shows: "Project drill-in: overall progress, in-flight sprint with burndown and confidence band, velocity chart, completed sprints — zero developer names",
+      shows: "Project drill-in: overall progress, in-flight sprint with burndown and confidence band, velocity chart, completed sprints; zero developer names",
       caption:
-        "Figure: client project detail. BurndownIndicator and VelocityChart are reused verbatim from the manager UI because they are already free of per-person data — the page's safety is auditable from its import list.",
+        "Figure: client project detail. BurndownIndicator and VelocityChart are reused verbatim from the manager UI because they are already free of per-person data; the page's safety is auditable from its import list.",
     });
 
     // Client forcing a manager route: the route guard bounces them to their
@@ -536,7 +536,7 @@ async function main() {
       shows: `Result of a client navigating directly to the Sprint 1 URL: the route guard redirects to ${landedAt}`,
       caption:
         "Figure: access denial for the client role. The client-side guard redirects to the delivery portfolio; independently, every sprint API endpoint returns 403 for this role (verified by the 48-check authorisation suite).",
-      note: `Observed behaviour: redirect to ${landedAt} rather than a rendered 403 page — the UI guard is cosmetic, the API is the security boundary.`,
+      note: `Observed behaviour: redirect to ${landedAt} rather than a rendered 403 page; the UI guard is cosmetic, the API is the security boundary.`,
     });
     await cli.close();
   } finally {
@@ -556,7 +556,7 @@ async function main() {
 // ---------------------------------------------------------------------------
 function writeManifest() {
   const lines: string[] = [];
-  lines.push("# Screenshot Manifest — Dissertation Figures");
+  lines.push("# Screenshot Manifest: Dissertation Figures");
   lines.push("");
   lines.push(
     `Generated ${new Date().toLocaleDateString("en-CA")} by \`npm run screenshots\` (reseeds the demo database, then captures via Playwright/Chromium at 1440×900, light theme).`
@@ -580,7 +580,7 @@ function writeManifest() {
     lines.push("");
     lines.push("## Notes and discrepancies");
     lines.push("");
-    for (const r of notes) lines.push(`- **${r.file}** — ${r.note}`);
+    for (const r of notes) lines.push(`- **${r.file}**: ${r.note}`);
   }
   lines.push("");
   writeFileSync(path.join(OUT_DIR, "MANIFEST.md"), lines.join("\n"));

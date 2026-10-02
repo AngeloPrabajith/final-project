@@ -11,7 +11,7 @@ const coverage = JSON.parse(readFileSync(path.join(root, "coverage/coverage-summ
 const date = new Date().toLocaleDateString("en-CA");
 const lines = [];
 
-lines.push("# Test Report — Capacity-Aware Sprint Planning System");
+lines.push("# Test Report: Capacity-Aware Sprint Planning System");
 lines.push("");
 lines.push(`**Generated:** ${date} · \`npm run test:report\``);
 lines.push("");
@@ -66,5 +66,5 @@ lines.push("");
 
 writeFileSync(path.join(root, "docs/test-report.md"), lines.join("\n"));
 console.log(
-  `docs/test-report.md written — ${results.numPassedTests}/${results.numTotalTests} passing, total line coverage ${total.lines.pct}%`
+  `docs/test-report.md written: ${results.numPassedTests}/${results.numTotalTests} passing, total line coverage ${total.lines.pct}%`
 );

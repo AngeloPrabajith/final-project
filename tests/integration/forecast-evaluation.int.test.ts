@@ -5,7 +5,7 @@ import { evaluateAllCompletedSprints } from "@/services/forecast-evaluation.serv
  * The dissertation's headline evaluation artefact (handbook §4): every
  * completed sprint re-forecast using only data that existed at its start,
  * compared against what actually happened. The seed engineers one clean
- * success, one moderate near-miss, one partial and one miss — the assertions
+ * success, one moderate near-miss, one partial and one miss; the assertions
  * pin the calibration story the report presents.
  */
 describe("retroactive forecast evaluation on the four seeded historic sprints", () => {

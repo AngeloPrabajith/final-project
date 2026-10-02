@@ -19,7 +19,7 @@ function dev(
   };
 }
 
-describe("sprint health score — 100 baseline with per-developer penalties", () => {
+describe("sprint health score: 100 baseline with per-developer penalties", () => {
   it("scores an empty sprint 100 and healthy", () => {
     const h = computeSprintHealth([]);
     expect(h.score).toBe(100);

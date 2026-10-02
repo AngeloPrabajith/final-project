@@ -32,7 +32,7 @@ describe("capacity engine against the seeded database", () => {
     expect(angelo!.overlappingSprintNames).toContain("Sprint 3 · Only Human launch stretch");
   });
 
-  it("includes paused tasks in assigned hours — pausing does not release capacity", async () => {
+  it("includes paused tasks in assigned hours: pausing does not release capacity", async () => {
     const sprint = await sprintByName("Sprint 1 · PDP experience");
     const analyses = await computeSprintCapacity(sprint.id);
     const angelo = analyses.find((a) => a.developerName === "Angelo Perera")!;
@@ -44,7 +44,7 @@ describe("capacity engine against the seeded database", () => {
     expect(angeloTasks.reduce((s, t) => s + t.estimatedHours, 0)).toBe(angelo.assignedHours);
   });
 
-  it("excludes done tasks from assigned hours — a fully completed sprint shows zero active load", async () => {
+  it("excludes done tasks from assigned hours: a fully completed sprint shows zero active load", async () => {
     const sprint = await sprintByName("Sprint -3 · Site speed foundations");
     const analyses = await computeSprintCapacity(sprint.id);
     expect(analyses.length).toBeGreaterThan(0);
@@ -77,7 +77,7 @@ describe("retroactive forecasting never rewrites history (handbook §4 leakage r
     expect(after).toBe(before);
   });
 
-  it("treats tasks completed after asOf as still pending — nothing is 'done' at sprint start", async () => {
+  it("treats tasks completed after asOf as still pending: nothing is 'done' at sprint start", async () => {
     const sprint = await sprintByName("Sprint 0 · Performance hardening");
 
     const retro = await computeSprintForecast(sprint.id, { asOf: sprint.startDate });
@@ -86,7 +86,7 @@ describe("retroactive forecasting never rewrites history (handbook §4 leakage r
       expect(a.assignedHours).toBeGreaterThan(0); // …so all of it counts as active
     }
 
-    // The live view of the same (now finished) sprint sees the completions —
+    // The live view of the same (now finished) sprint sees the completions,
     // proving the asOf filter, not the data, made the difference.
     const live = await computeSprintForecast(sprint.id);
     const liveCompleted = live.adjustedAnalyses.reduce((s, a) => s + a.completedHours, 0);
@@ -117,7 +117,7 @@ describe("meeting-hours clamp on a scratch fixture", () => {
     // Placed 100 days out so it can never overlap the seeded in-flight sprints
     // and disturb their multi-project factors.
     const project = await prisma.project.create({
-      data: { name: "ZZ Scratch — meetings clamp" },
+      data: { name: "ZZ Scratch: meetings clamp" },
     });
     projectId = project.id;
     const developer = await prisma.developer.create({

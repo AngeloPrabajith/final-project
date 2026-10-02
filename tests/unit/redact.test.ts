@@ -13,7 +13,7 @@ import {
 } from "@/lib/redact";
 import type { CapacityAnalysis } from "@/types";
 
-// A maximal task as Prisma returns it — nested assignee and every sensitive
+// A maximal task as Prisma returns it, with nested assignee and every sensitive
 // field present, so the key-set assertions prove the whitelist drops them.
 const fullTask = {
   id: "t1",
@@ -51,7 +51,7 @@ const fullProject = {
   sprints: [fullSprint],
 };
 
-describe("whitelist redaction — client shapes are BUILT, never stripped", () => {
+describe("whitelist redaction: client shapes are BUILT, never stripped", () => {
   // Handbook §10.11: a key-set assertion fails the moment someone adds a field
   // to the model without deciding whether clients may see it.
   it("produces exactly the CLIENT_TASK_KEYS set for a client task", () => {
@@ -77,7 +77,7 @@ describe("whitelist redaction — client shapes are BUILT, never stripped", () =
   });
 
   // Handbook §5 leak trap 1: retrospectiveNotes is manager-authored free text
-  // naming and evaluating individuals — the least obvious leak in the codebase.
+  // naming and evaluating individuals: the least obvious leak in the codebase.
   it("drops retrospectiveNotes and capacityBuffer from sprints", () => {
     const redacted = redactSprintForClient(fullSprint) as unknown as Record<string, unknown>;
     expect(redacted).not.toHaveProperty("retrospectiveNotes");
@@ -104,7 +104,7 @@ describe("whitelist redaction — client shapes are BUILT, never stripped", () =
   });
 });
 
-describe("delivery confidence — band only, never the probability", () => {
+describe("delivery confidence: band only, never the probability", () => {
   it.each([
     ["low", "On track"],
     ["moderate", "On track - minor risk"],

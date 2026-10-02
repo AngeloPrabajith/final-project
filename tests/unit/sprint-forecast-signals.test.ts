@@ -43,7 +43,7 @@ function adjusted(
 
 beforeEach(() => vi.clearAllMocks());
 
-describe("exponential squish — probability = 100 × (1 − e^(−raw/40))", () => {
+describe("exponential squish: probability = 100 × (1 − e^(−raw/40))", () => {
   // predictive-layer.md design decision 2: a pristine sprint must read 0%,
   // which a standard logistic (50% at raw=0) cannot deliver.
   it("maps zero raw points to exactly 0% probability", () => {
@@ -76,7 +76,7 @@ describe("risk bands at 25 / 50 / 75", () => {
   });
 });
 
-describe("signal 1: team utilisation (max 40) — factor-adjusted peak", () => {
+describe("signal 1: team utilisation (max 40), factor-adjusted peak", () => {
   it("awards zero points when every developer sits below 80%", () => {
     expect(utilisationPoints([adjusted("A", 79)]).points).toBe(0);
   });
@@ -97,7 +97,7 @@ describe("signal 1: team utilisation (max 40) — factor-adjusted peak", () => {
   });
 });
 
-describe("signal 5: estimation accuracy (max 10) — asymmetric penalty", () => {
+describe("signal 5: estimation accuracy (max 10), asymmetric penalty", () => {
   it("caps at 10 points for a heavily under-estimating team", () => {
     const team = [{ ...adjusted("A", 50), accuracyFactor: 1.5 }];
     expect(estimationAccuracyPoints(team).points).toBe(10); // 0.5 dev × 25 = 12.5 → cap
@@ -122,7 +122,7 @@ describe("signal 5: estimation accuracy (max 10) — asymmetric penalty", () => 
   });
 });
 
-describe("signal 4: days remaining (max 15) — remaining work vs time left", () => {
+describe("signal 4: days remaining (max 15), remaining work vs time left", () => {
   const sprint = {
     startDate: new Date("2026-06-01T00:00:00Z"),
     endDate: new Date("2026-06-15T00:00:00Z"),
@@ -163,7 +163,7 @@ describe("signal 4: days remaining (max 15) — remaining work vs time left", ()
   });
 });
 
-describe("signal 3: velocity trend (max 15) — stepwise on past completion rate", () => {
+describe("signal 3: velocity trend (max 15), stepwise on past completion rate", () => {
   const asOf = new Date("2026-08-01T00:00:00Z");
 
   const pastSprint = (done: number, total: number) => ({
@@ -196,7 +196,7 @@ describe("signal 3: velocity trend (max 15) — stepwise on past completion rate
   });
 });
 
-describe("signal 2: ad-hoc history (max 20) — stepwise on unplanned fraction", () => {
+describe("signal 2: ad-hoc history (max 20), stepwise on unplanned fraction", () => {
   const asOf = new Date("2026-08-01T00:00:00Z");
 
   const mix = (adhocHours: number, plannedHours: number) => [
