@@ -8,7 +8,7 @@ import { evaluateAllCompletedSprints } from "@/services/forecast-evaluation.serv
  * success, one moderate near-miss, one partial and one miss — the assertions
  * pin the calibration story the report presents.
  */
-describe("retroactive forecast evaluation on the four historic NOYZ sprints", () => {
+describe("retroactive forecast evaluation on the four seeded historic sprints", () => {
   it("classifies the four historic sprints as low/met, moderate/met, high/partial and high/missed", async () => {
     const summary = await evaluateAllCompletedSprints();
 

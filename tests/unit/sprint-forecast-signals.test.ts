@@ -71,7 +71,7 @@ describe("risk bands at 25 / 50 / 75", () => {
     [74, "high"],
     [75, "critical"],
     [100, "critical"],
-  ])("classifies %i%% as %s", (p, band) => {
+  ])("classifies %i percent as %s", (p, band) => {
     expect(getRiskBand(p)).toBe(band);
   });
 });
