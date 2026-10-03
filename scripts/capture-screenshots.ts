@@ -12,6 +12,10 @@
  *
  * The script never mutates the seed: the actual-hours dialog is dismissed with
  * Escape (its cancel path), and the simulator is a read-only what-if.
+ *
+ * `--only 03,26` (or `npm run screenshots -- --only 03,26`) still walks every
+ * page but writes only the listed figures, leaving every other PNG and
+ * MANIFEST.md untouched.
  */
 import { chromium, type Browser, type Locator, type Page } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
@@ -38,6 +42,21 @@ interface ManifestRow {
   note?: string;
 }
 const manifest: ManifestRow[] = [];
+
+/** Figure numbers from `--only 03,26` / `--only=03,26`; null captures everything. */
+function parseOnly(argv: string[]): Set<string> | null {
+  const i = argv.findIndex((a) => a === "--only" || a.startsWith("--only="));
+  if (i === -1) return null;
+  const raw = argv[i].includes("=") ? argv[i].split("=")[1] : argv[i + 1];
+  if (!raw) throw new Error("--only needs figure numbers, e.g. --only 03,26");
+  return new Set(raw.split(",").map((n) => n.trim().padStart(2, "0")));
+}
+const ONLY = parseOnly(process.argv.slice(2));
+const written: string[] = [];
+
+function selected(file: string): boolean {
+  return ONLY === null || ONLY.has(file.slice(0, 2));
+}
 
 // ---------------------------------------------------------------------------
 // Dev server management: start it only if nothing is listening.
@@ -82,7 +101,27 @@ async function settle(page: Page): Promise<void> {
     undefined,
     { timeout: 15_000 }
   );
-  await page.waitForTimeout(600); // let Recharts finish its entry animation
+  await page.waitForTimeout(600);
+  await waitForCharts(page);
+}
+
+/**
+ * Recharts draws the axes, legend and reference lines at once but grows the
+ * bars in with an entry animation, so a capture taken too early shows an empty
+ * plot. On any page with a chart, wait until a bar has real height, then give
+ * the animation time to finish.
+ */
+async function waitForCharts(page: Page): Promise<void> {
+  if ((await page.locator("svg.recharts-surface").count()) === 0) return;
+  await page.waitForFunction(
+    () =>
+      Array.from(document.querySelectorAll(".recharts-bar-rectangle path")).some(
+        (bar) => bar.getBoundingClientRect().height > 0
+      ),
+    undefined,
+    { timeout: 15_000 }
+  );
+  await page.waitForTimeout(1500);
 }
 
 /** The shadcn Card containing the given text (cards are never nested here). */
@@ -95,12 +134,15 @@ async function shotPage(
   row: Omit<ManifestRow, "mode"> & { mode?: ManifestRow["mode"] }
 ): Promise<void> {
   const mode = row.mode ?? "full";
-  await page.screenshot({
-    path: path.join(OUT_DIR, row.file),
-    fullPage: mode === "full",
-  });
+  if (selected(row.file)) {
+    await page.screenshot({
+      path: path.join(OUT_DIR, row.file),
+      fullPage: mode === "full",
+    });
+    written.push(row.file);
+    console.log(`  ✓ ${row.file}`);
+  }
   manifest.push({ ...row, mode });
-  console.log(`  ✓ ${row.file}`);
 }
 
 async function shotElement(
@@ -110,9 +152,12 @@ async function shotElement(
 ): Promise<void> {
   await target.scrollIntoViewIfNeeded();
   await page.waitForTimeout(200);
-  await target.screenshot({ path: path.join(OUT_DIR, row.file) });
+  if (selected(row.file)) {
+    await target.screenshot({ path: path.join(OUT_DIR, row.file) });
+    written.push(row.file);
+    console.log(`  ✓ ${row.file}`);
+  }
   manifest.push({ ...row, mode: "element" });
-  console.log(`  ✓ ${row.file}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -122,6 +167,10 @@ async function openContext(browser: Browser) {
   const context = await browser.newContext({
     viewport: VIEWPORT,
     colorScheme: "light",
+    // A fullPage capture briefly resizes the page, which makes Recharts re-run
+    // its bar entry animation from zero height mid-capture. Recharts skips that
+    // animation under prefers-reduced-motion, so the bars are drawn at once.
+    reducedMotion: "reduce",
     baseURL: BASE,
   });
   // Pin next-themes to light regardless of OS setting.
@@ -547,6 +596,12 @@ async function main() {
     }
   }
 
+  if (ONLY) {
+    const missing = [...ONLY].filter((n) => !written.some((f) => f.startsWith(n)));
+    if (missing.length > 0) throw new Error(`--only matched no figure for: ${missing.join(", ")}`);
+    console.log(`\n--only: wrote ${written.join(", ")}; MANIFEST.md and all other PNGs left untouched`);
+    return;
+  }
   writeManifest();
   console.log(`\n${manifest.length} screenshots captured → docs/screenshots/`);
 }
